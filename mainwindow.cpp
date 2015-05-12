@@ -24,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete DATE_FORMAT;
+    delete DATE_TIME_FORMAT;
 }
 
 void MainWindow::initialize()
@@ -167,8 +169,8 @@ void MainWindow::onTableClicked(const QModelIndex &index)
     QString cellText = index.data().toString();
     qDebug() << cellText;
 
-    if (!quickDateInsert)
-    {
+//    if (!quickDateInsert)
+//    {
         QDateTime currentTime = QDateTime::currentDateTimeUtc();
         int row = index.row();
         int col = index.column();
@@ -181,14 +183,15 @@ void MainWindow::onTableClicked(const QModelIndex &index)
         int processPhaseId = index.data(TableCellDataType::PHASE_ID).toString().toInt();
         long clItemId = index.data(TableCellDataType::CL_ITEM_ID).toString().toLong();
 
-
         qDebug() << "--------- " << sites[0].siteDetails.SwpId;
         QMutableListIterator<Site> siteIterator(sites);
         while(siteIterator.hasNext())
         {
             Site site = siteIterator.next();
             if (site.siteDetails.SwpId != swpId) continue;
-            QMutableListIterator<ProcessPhase> phaseIterator(site.Checklists[0].ProcessPhases);
+
+            QMutableListIterator<Checklist> checklistsIterator(site.Checklists);
+            QMutableListIterator<ProcessPhase> phaseIterator(checklistsIterator.next().ProcessPhases);
             while(phaseIterator.hasNext())
             {
                 ProcessPhase phase = phaseIterator.next();
@@ -207,7 +210,11 @@ void MainWindow::onTableClicked(const QModelIndex &index)
         }
 
         model->setData(index, currentTime.toString(DATE_TIME_FORMAT));
+
+        qDebug() << currentTime.toString(DATE_TIME_FORMAT);
+
         return;
-    }
+//    }
 }
+
 

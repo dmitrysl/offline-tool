@@ -7,7 +7,8 @@ ExportCronosSiteXmlGenerator::ExportCronosSiteXmlGenerator()
 
 ExportCronosSiteXmlGenerator::~ExportCronosSiteXmlGenerator()
 {
-
+    delete DATE_FORMAT;
+    delete DATE_TIME_FORMAT;
 }
 
 void ExportCronosSiteXmlGenerator::initializeExportXmlTokenMap()

@@ -44,7 +44,7 @@ private:
     Ui::MainWindow *ui;
     QStandardItemModel *model;
     QList<Site> sites;
-    QList<Site> editedSites;
+    QList<Site> updatedSites;
     bool quickDateInsert;
 
     static constexpr const char* DATE_FORMAT = "dd/MM/yyyy";
