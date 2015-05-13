@@ -47,7 +47,8 @@ private:
     QProgressBar *stateProgress;
     QStandardItemModel *model;
     CronosSiteXmlParser *parser;
-    QList<Site> sites;
+    ExportCronosSiteXmlGenerator *generator;
+    QList<QSharedPointer<Site>> sites;
     QList<Site> updatedSites;
     bool quickDateInsert;
 

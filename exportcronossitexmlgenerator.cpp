@@ -74,8 +74,20 @@ void ExportCronosSiteXmlGenerator::initializeExportXmlTokenMap()
     exportXmlTokens.insert(ExportXmlToken::IS_SELECTED, "IsSelected");
 }
 
-void ExportCronosSiteXmlGenerator::generateXmlFile(QFile &file, const QList<Site> &sites, const QString &userName)
+void ExportCronosSiteXmlGenerator::updateProgress(qint64 currentPosition)
 {
+    qint64 fileSize = 0;
+    qDebug() << "-----------";
+    qDebug() << fileSize;
+    qDebug() << currentPosition;
+    int progress = (int) (((double) currentPosition / fileSize) * 100);
+    qDebug() << progress;
+    emit updateProgress(progress);
+}
+
+void ExportCronosSiteXmlGenerator::generateXmlFile(QFile &file, const QList<QSharedPointer<Site>> &sites, const QString &userName)
+{
+    updateProgress(0);
     QXmlStreamWriter xmlWriter(&file);
     xmlWriter.setAutoFormatting(true);
 
@@ -83,7 +95,7 @@ void ExportCronosSiteXmlGenerator::generateXmlFile(QFile &file, const QList<Site
 
     xmlWriter.writeStartElement(exportXmlTokens[ExportXmlToken::SITES]);
 
-    foreach (const Site site, sites)
+    foreach (QSharedPointer<Site> site, sites)
     {
         writeSite(xmlWriter, site, userName);
     }
@@ -91,43 +103,44 @@ void ExportCronosSiteXmlGenerator::generateXmlFile(QFile &file, const QList<Site
     xmlWriter.writeEndElement();
 
     xmlWriter.writeEndDocument();
+    updateProgress(100);
 }
 
-void ExportCronosSiteXmlGenerator::writeSite(QXmlStreamWriter &xmlWriter, const Site &site, const QString &userName)
+void ExportCronosSiteXmlGenerator::writeSite(QXmlStreamWriter &xmlWriter, const QSharedPointer<Site> site, const QString &userName)
 {
     xmlWriter.writeStartElement(exportXmlTokens[ExportXmlToken::SITE]);
 
     xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::USER_NAME], userName);
-    xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::TOKEN], site.Token);
-    xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::SWP_ID], QString::number(site.siteDetails.SwpId));
-    xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::STARTED_AT], site.siteDetails.StartedAt.toString(DATE_TIME_FORMAT));
+    xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::TOKEN], site.data()->Token);
+    xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::SWP_ID], QString::number(site.data()->siteDetails.SwpId));
+    xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::STARTED_AT], site.data()->siteDetails.StartedAt.toString(DATE_TIME_FORMAT));
 
-    writeSiteLogMessages(xmlWriter, site.SiteLog);
-    writeChecklists(xmlWriter, site.Checklists);
+    writeSiteLogMessages(xmlWriter, site.data()->SiteLog);
+    writeChecklists(xmlWriter, site.data()->Checklists);
 
     xmlWriter.writeEndElement();
 }
 
-void ExportCronosSiteXmlGenerator::writeSiteLogMessages(QXmlStreamWriter &xmlWriter, const QList<Message> &siteLogMessages)
+void ExportCronosSiteXmlGenerator::writeSiteLogMessages(QXmlStreamWriter &xmlWriter, const QList<QSharedPointer<Message>> siteLogMessages)
 {
     if (siteLogMessages.isEmpty()) return;
 
     xmlWriter.writeStartElement(exportXmlTokens[ExportXmlToken::SITE_LOG]);
 
-    foreach (const Message message, siteLogMessages)
+    foreach (QSharedPointer<Message> message, siteLogMessages)
     {
         xmlWriter.writeStartElement(exportXmlTokens[ExportXmlToken::MESSAGE]);
 
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::ID], QString::number(message.Id));
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::CONTENT], message.Content);
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::CREATED_AT], message.CreatedAt.toString(DATE_TIME_FORMAT));
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::CREATED_BY], message.CreatedBy);
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::ID], QString::number(message.data()->Id));
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::CONTENT], message.data()->Content);
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::CREATED_AT], message.data()->CreatedAt.toString(DATE_TIME_FORMAT));
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::CREATED_BY], message.data()->CreatedBy);
 
-        if (message.UpdatedAt.isValid())
-            xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::UPDATED_AT], message.UpdatedAt.toString(DATE_TIME_FORMAT));
+        if (message.data()->UpdatedAt.isValid())
+            xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::UPDATED_AT], message.data()->UpdatedAt.toString(DATE_TIME_FORMAT));
 
-        if (!message.UpdatedBy.isEmpty())
-            xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::UPDATED_BY], message.UpdatedBy);
+        if (!message.data()->UpdatedBy.isEmpty())
+            xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::UPDATED_BY], message.data()->UpdatedBy);
 
         xmlWriter.writeEndElement();
     }
@@ -135,13 +148,13 @@ void ExportCronosSiteXmlGenerator::writeSiteLogMessages(QXmlStreamWriter &xmlWri
     xmlWriter.writeEndElement();
 }
 
-void ExportCronosSiteXmlGenerator::writeChecklists(QXmlStreamWriter &xmlWriter, const QList<Checklist> &checklists)
+void ExportCronosSiteXmlGenerator::writeChecklists(QXmlStreamWriter &xmlWriter, const QList<QSharedPointer<Checklist>> checklists)
 {
     if (checklists.isEmpty()) return;
 
     xmlWriter.writeStartElement(exportXmlTokens[ExportXmlToken::CHECKLISTS]);
 
-    foreach (const Checklist checklist, checklists)
+    foreach (QSharedPointer<Checklist> checklist, checklists)
     {
         writeChecklist(xmlWriter, checklist);
     }
@@ -149,21 +162,21 @@ void ExportCronosSiteXmlGenerator::writeChecklists(QXmlStreamWriter &xmlWriter, 
     xmlWriter.writeEndElement();
 }
 
-void ExportCronosSiteXmlGenerator::writeChecklist(QXmlStreamWriter &xmlWriter, const Checklist &checklist)
+void ExportCronosSiteXmlGenerator::writeChecklist(QXmlStreamWriter &xmlWriter, const QSharedPointer<Checklist> checklist)
 {
     xmlWriter.writeStartElement(exportXmlTokens[ExportXmlToken::CHECKLIST]);
 
-    xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::ID], QString::number(checklist.Id));
-    xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::PLANNED_START_DATE], checklist.PlannedStartDate.toString(DATE_FORMAT));
+    xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::ID], QString::number(checklist.data()->Id));
+    xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::PLANNED_START_DATE], checklist.data()->PlannedStartDate.toString(DATE_FORMAT));
 
-    writePlanningTools(xmlWriter, checklist.PlanningTools);
-    writeAdditionalFields(xmlWriter, checklist.AdditionalFields);
-    writeIssueLog(xmlWriter, checklist.Issues);
+    writePlanningTools(xmlWriter, checklist.data()->PlanningTools);
+    writeAdditionalFields(xmlWriter, checklist.data()->AdditionalFields);
+    writeIssueLog(xmlWriter, checklist.data()->Issues);
 
-    QList<ChecklistItem> checklistItems;
-    foreach(const ProcessPhase processPhase, checklist.ProcessPhases)
+    QList<QSharedPointer<ChecklistItem>> checklistItems;
+    foreach(QSharedPointer<ProcessPhase> processPhase, checklist.data()->ProcessPhases)
     {
-        checklistItems.append(processPhase.Items);
+        checklistItems.append(processPhase.data()->Items);
     }
 
     writeChecklistItems(xmlWriter, checklistItems);
@@ -171,19 +184,19 @@ void ExportCronosSiteXmlGenerator::writeChecklist(QXmlStreamWriter &xmlWriter, c
     xmlWriter.writeEndElement();
 }
 
-void ExportCronosSiteXmlGenerator::writePlanningTools(QXmlStreamWriter &xmlWriter, const QList<PlanningTool> &planningTools)
+void ExportCronosSiteXmlGenerator::writePlanningTools(QXmlStreamWriter &xmlWriter, const QList<QSharedPointer<PlanningTool>> planningTools)
 {
     if (planningTools.isEmpty()) return;
 
     xmlWriter.writeStartElement(exportXmlTokens[ExportXmlToken::PLANNING_TOOLS]);
 
-    foreach (const PlanningTool planningTool, planningTools)
+    foreach (QSharedPointer<PlanningTool> planningTool, planningTools)
     {
-        if (!planningTool.IsSelected) continue;
+        if (!planningTool.data()->IsSelected) continue;
 
         xmlWriter.writeStartElement(exportXmlTokens[ExportXmlToken::PLANNING_TOOL]);
 
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::ID], QString::number(planningTool.Id));
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::ID], QString::number(planningTool.data()->Id));
 
         xmlWriter.writeEndElement();
     }
@@ -191,18 +204,18 @@ void ExportCronosSiteXmlGenerator::writePlanningTools(QXmlStreamWriter &xmlWrite
     xmlWriter.writeEndElement();
 }
 
-void ExportCronosSiteXmlGenerator::writeAdditionalFields(QXmlStreamWriter &xmlWriter, const QList<AdditionalField> &additionalFields)
+void ExportCronosSiteXmlGenerator::writeAdditionalFields(QXmlStreamWriter &xmlWriter, const QList<QSharedPointer<AdditionalField>> additionalFields)
 {
     if (additionalFields.isEmpty()) return;
 
     xmlWriter.writeStartElement(exportXmlTokens[ExportXmlToken::ADDITIONAL_FIELDS]);
 
-    foreach (const AdditionalField additionalField, additionalFields)
+    foreach (QSharedPointer<AdditionalField> additionalField, additionalFields)
     {
         xmlWriter.writeStartElement(exportXmlTokens[ExportXmlToken::FIELD]);
 
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::ID], QString::number(additionalField.Id));
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::VALUE], additionalField.Value);
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::ID], QString::number(additionalField.data()->Id));
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::VALUE], additionalField.data()->Value);
 
         xmlWriter.writeEndElement();
     }
@@ -210,27 +223,27 @@ void ExportCronosSiteXmlGenerator::writeAdditionalFields(QXmlStreamWriter &xmlWr
     xmlWriter.writeEndElement();
 }
 
-void ExportCronosSiteXmlGenerator::writeIssueLog(QXmlStreamWriter &xmlWriter, const QList<Issue> &issues)
+void ExportCronosSiteXmlGenerator::writeIssueLog(QXmlStreamWriter &xmlWriter, const QList<QSharedPointer<Issue>> issues)
 {
     if (issues.isEmpty()) return;
 
     xmlWriter.writeStartElement(exportXmlTokens[ExportXmlToken::ISSUE_LOG]);
 
-    foreach (const Issue issue, issues)
+    foreach (QSharedPointer<Issue> issue, issues)
     {
         xmlWriter.writeStartElement(exportXmlTokens[ExportXmlToken::ISSUE]);
 
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::ID], QString::number(issue.Id));
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::TYPE], QString::number(issue.Type));
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::PHASE], QString::number(issue.Phase));
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::QUALITY_ITEM], QString::number(issue.QualityItem));
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::RESPONSIBLE_PARTY], QString::number(issue.ResponsibleParty));
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::STATUS], QString::number(issue.Status));
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::DESCRIPTION], issue.Description);
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::CREATED_AT], issue.CreatedAt.toString(DATE_TIME_FORMAT));
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::ID], QString::number(issue.data()->Id));
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::TYPE], QString::number(issue.data()->Type));
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::PHASE], QString::number(issue.data()->Phase));
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::QUALITY_ITEM], QString::number(issue.data()->QualityItem));
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::RESPONSIBLE_PARTY], QString::number(issue.data()->ResponsibleParty));
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::STATUS], QString::number(issue.data()->Status));
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::DESCRIPTION], issue.data()->Description);
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::CREATED_AT], issue.data()->CreatedAt.toString(DATE_TIME_FORMAT));
 
-        if (issue.UpdatedAt.isValid())
-            xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::UPDATED_AT], issue.UpdatedAt.toString(DATE_TIME_FORMAT));
+        if (issue.data()->UpdatedAt.isValid())
+            xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::UPDATED_AT], issue.data()->UpdatedAt.toString(DATE_TIME_FORMAT));
 
         xmlWriter.writeEndElement();
     }
@@ -238,20 +251,20 @@ void ExportCronosSiteXmlGenerator::writeIssueLog(QXmlStreamWriter &xmlWriter, co
     xmlWriter.writeEndElement();
 }
 
-void ExportCronosSiteXmlGenerator::writeChecklistItems(QXmlStreamWriter &xmlWriter, const QList<ChecklistItem> &checklistItems)
+void ExportCronosSiteXmlGenerator::writeChecklistItems(QXmlStreamWriter &xmlWriter, const QList<QSharedPointer<ChecklistItem>> checklistItems)
 {
     xmlWriter.writeStartElement(exportXmlTokens[ExportXmlToken::ITEMS]);
 
-    foreach(const ChecklistItem checklistItem, checklistItems)
+    foreach(QSharedPointer<ChecklistItem> checklistItem, checklistItems)
     {
         xmlWriter.writeStartElement(exportXmlTokens[ExportXmlToken::ITEM]);
 
-        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::ID], QString::number(checklistItem.Id));
+        xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::ID], QString::number(checklistItem.data()->Id));
 
-        if (checklistItem.CompletedAt.isValid())
-            xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::COMPLETED_AT], checklistItem.CompletedAt.toString(DATE_TIME_FORMAT));
-        if (!checklistItem.Comment.isEmpty())
-            xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::COMMENT], checklistItem.Comment);
+        if (checklistItem.data()->CompletedAt.isValid())
+            xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::COMPLETED_AT], checklistItem.data()->CompletedAt.toString(DATE_TIME_FORMAT));
+        if (!checklistItem.data()->Comment.isEmpty())
+            xmlWriter.writeTextElement(exportXmlTokens[ExportXmlToken::COMMENT], checklistItem.data()->Comment);
 
         xmlWriter.writeEndElement();
     }

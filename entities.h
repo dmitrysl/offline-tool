@@ -1,6 +1,7 @@
 #ifndef ENTITIES
 #define ENTITIES
 
+#include <QSharedPointer>
 #include <QString>
 #include <QDate>
 #include <QDateTime>
@@ -101,7 +102,7 @@ struct ProcessPhase
 {
     int Type;
     QString Name;
-    QList<ChecklistItem> Items;
+    QList<QSharedPointer<ChecklistItem>> Items;
 };
 
 struct Issue
@@ -127,10 +128,10 @@ struct Checklist
     QString Scope;
     QString Technology;
     QDate PlannedStartDate;
-    QList<PlanningTool> PlanningTools;
-    QList<AdditionalField> AdditionalFields;
-    QList<Issue> Issues;
-    QList<ProcessPhase> ProcessPhases;
+    QList<QSharedPointer<PlanningTool>> PlanningTools;
+    QList<QSharedPointer<AdditionalField>> AdditionalFields;
+    QList<QSharedPointer<Issue>> Issues;
+    QList<QSharedPointer<ProcessPhase>> ProcessPhases;
 };
 
 struct Project
@@ -165,8 +166,8 @@ struct Site
     Project project;
     WorkPackage workPackage;
     SiteDetails siteDetails;
-    QList<Message> SiteLog;
-    QList<Checklist> Checklists;
+    QList<QSharedPointer<Message>> SiteLog;
+    QList<QSharedPointer<Checklist>> Checklists;
 };
 
 

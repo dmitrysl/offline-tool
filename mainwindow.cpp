@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     stateProgress = new QProgressBar(this);
     parser = new CronosSiteXmlParser();
+    generator = new ExportCronosSiteXmlGenerator();
 
     ui->statusBar->addWidget(stateProgress);
     stateProgress->setVisible(false);
@@ -23,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->exportButton->setDisabled(true);
 
     QObject::connect(parser, SIGNAL(updateProgress(int)), stateProgress, SLOT(setValue(int)));
+    QObject::connect(generator, SIGNAL(updateProgress(int)), stateProgress, SLOT(setValue(int)));
     connect(ui->tableView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(onTableClicked(const QModelIndex &)));
 
     initialize();
@@ -31,6 +33,9 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete parser;
+    delete generator;
+    sites.detach();
     delete DATE_FORMAT;
     delete DATE_TIME_FORMAT;
 }
@@ -83,18 +88,18 @@ void MainWindow::initializeViewTable()
     QStringList verticalHeader;
 
     QMap<int, QSet<QString>> uniqueClItemNames;
-    foreach(const Site &site, sites)
+    foreach(QSharedPointer<Site> site, sites)
     {
-        verticalHeader.append(site.siteDetails.Csc);
-        if (site.Checklists.isEmpty()) continue;
-        foreach(const ProcessPhase &processPhase, site.Checklists[0].ProcessPhases)
+        verticalHeader.append(site.data()->siteDetails.Csc);
+        if (site.data()->Checklists.isEmpty()) continue;
+        foreach(QSharedPointer<ProcessPhase> processPhase, site.data()->Checklists[0].data()->ProcessPhases)
         {
-            QSet<QString> items = uniqueClItemNames.value(processPhase.Type);
-            foreach (ChecklistItem checklistItem, processPhase.Items)
+            QSet<QString> items = uniqueClItemNames.value(processPhase.data()->Type);
+            foreach (QSharedPointer<ChecklistItem> checklistItem, processPhase.data()->Items)
             {
-                items.insert(checklistItem.Name);
+                items.insert(checklistItem.data()->Name);
             }
-            uniqueClItemNames.insert(processPhase.Type, items);
+            uniqueClItemNames.insert(processPhase.data()->Type, items);
         }
     }
 
@@ -106,7 +111,7 @@ void MainWindow::initializeViewTable()
 
     int row = 0;
     int col = 0;
-    foreach (const Site &site, sites)
+    foreach (QSharedPointer<Site> site, sites)
     {
         foreach (const QString &itemName, list)
         {
@@ -116,23 +121,23 @@ void MainWindow::initializeViewTable()
             model->setItem(row, col, item);
             col++;
         }
-        if (site.Checklists.isEmpty()) continue;
-        foreach(const ProcessPhase &processPhase, site.Checklists[0].ProcessPhases)
+        if (site.data()->Checklists.isEmpty()) continue;
+        foreach(QSharedPointer<ProcessPhase> processPhase, site.data()->Checklists[0].data()->ProcessPhases)
         {
             //QList<QString> items = uniqueClItemNames.value(processPhase.Type).toList();
-            foreach (const ChecklistItem &checklistItem, processPhase.Items)
+            foreach (QSharedPointer<ChecklistItem> checklistItem, processPhase.data()->Items)
             {
-                int index = list.indexOf(checklistItem.Name);
-                item = new QStandardItem(checklistItem.CompletedAt.toString(DATE_FORMAT));
+                int index = list.indexOf(checklistItem.data()->Name);
+                item = new QStandardItem(checklistItem.data()->CompletedAt.toString(DATE_FORMAT));
                 item->setEditable(false);
                 item->setTextAlignment(Qt::AlignHCenter);
-                item->setData(QVariant(QString::number(site.siteDetails.SwpId)), TableCellDataType::SWP_ID);
-                item->setData(QVariant(processPhase.Type), TableCellDataType::PHASE_ID);
-                item->setData(QVariant(QString::number(checklistItem.Id)), TableCellDataType::CL_ITEM_ID);
+                item->setData(QVariant(QString::number(site.data()->siteDetails.SwpId)), TableCellDataType::SWP_ID);
+                item->setData(QVariant(processPhase.data()->Type), TableCellDataType::PHASE_ID);
+                item->setData(QVariant(QString::number(checklistItem.data()->Id)), TableCellDataType::CL_ITEM_ID);
 
                 model->setItem(row, index, item);
 
-                if (!checklistItem.Comment.isEmpty())
+                if (!checklistItem.data()->Comment.isEmpty())
                 {
                     item = model->item(row, index);
                     item->setBackground(Qt::yellow);
@@ -164,8 +169,9 @@ void MainWindow::on_exportButton_clicked()
     QFile file(filename);
     file.open(QIODevice::WriteOnly);
 
-    ExportCronosSiteXmlGenerator generator;
-    generator.generateXmlFile(file, sites, QString("admin"));
+    stateProgress->setVisible(true);
+    generator->generateXmlFile(file, sites, QString("admin"));
+    stateProgress->setVisible(false);
 
     file.close();
 
@@ -185,7 +191,7 @@ void MainWindow::onTableClicked(const QModelIndex &index)
         int row = index.row();
         int col = index.column();
 
-        qDebug() << sites.at(row).siteDetails.Csc;
+        qDebug() << sites.at(row).data()->siteDetails.Csc;
         qDebug() << model->headerData(row, Qt::Vertical).toString();
         qDebug() << model->headerData(col, Qt::Horizontal).toString();
 
@@ -193,25 +199,25 @@ void MainWindow::onTableClicked(const QModelIndex &index)
         int processPhaseId = index.data(TableCellDataType::PHASE_ID).toString().toInt();
         long clItemId = index.data(TableCellDataType::CL_ITEM_ID).toString().toLong();
 
-        qDebug() << "--------- " << sites[0].siteDetails.SwpId;
-        QMutableListIterator<Site> siteIterator(sites);
+        qDebug() << "--------- " << sites[0].data()->siteDetails.SwpId;
+        QMutableListIterator<QSharedPointer<Site>> siteIterator(sites);
         while(siteIterator.hasNext())
         {
-            Site site = siteIterator.next();
-            if (site.siteDetails.SwpId != swpId) continue;
+            QSharedPointer<Site> site = siteIterator.next();
+            if (site.data()->siteDetails.SwpId != swpId) continue;
 
-            QMutableListIterator<Checklist> checklistsIterator(site.Checklists);
-            QMutableListIterator<ProcessPhase> phaseIterator(checklistsIterator.next().ProcessPhases);
+            QMutableListIterator<QSharedPointer<Checklist>> checklistsIterator(site.data()->Checklists);
+            QMutableListIterator<QSharedPointer<ProcessPhase>> phaseIterator(checklistsIterator.next().data()->ProcessPhases);
             while(phaseIterator.hasNext())
             {
-                ProcessPhase phase = phaseIterator.next();
-                if (phase.Type != processPhaseId) continue;
-                QMutableListIterator<ChecklistItem> clItemIterator(phase.Items);
+                QSharedPointer<ProcessPhase> phase = phaseIterator.next();
+                if (phase.data()->Type != processPhaseId) continue;
+                QMutableListIterator<QSharedPointer<ChecklistItem>> clItemIterator(phase.data()->Items);
                 while(clItemIterator.hasNext())
                 {
-                    ChecklistItem item = clItemIterator.next();
-                    if (item.Id != clItemId) continue;
-                    item.CompletedAt = currentTime;
+                    QSharedPointer<ChecklistItem> item = clItemIterator.next();
+                    if (item.data()->Id != clItemId) continue;
+                    item.data()->CompletedAt = currentTime;
                     break;
                 }
                 break;

@@ -93,7 +93,7 @@ public:
     explicit CronosSiteXmlParser();
     virtual ~CronosSiteXmlParser();
     void parseXmlFile(QFile &file);
-    QList<Site> getResult();
+    QList<QSharedPointer<Site>> getResult();
     void clear();
 
 signals:
@@ -109,23 +109,23 @@ private:
     QList<ReasonType> parseReasonTypes(QXmlStreamReader &xml);
     QList<IssueResponsibleParty> parseIssueResponsibleParties(QXmlStreamReader &xml);
     QList<IssueQualityItem> parseIssueQualityItems(QXmlStreamReader &xml);
-    Site parseSite(QXmlStreamReader &xml);
+    QSharedPointer<Site> parseSite(QXmlStreamReader &xml);
     Project parseProject(QXmlStreamReader &xml);
     WorkPackage parseWorkPackage(QXmlStreamReader &xml);
-    QList<Message> parseSiteLogMessages(QXmlStreamReader &xml);
+    QList<QSharedPointer<Message>> parseSiteLogMessages(QXmlStreamReader &xml);
     SiteDetails parseSiteDetails(QXmlStreamReader &xml);
-    QList<Checklist> parseChecklists(QXmlStreamReader &xml);
-    QList<PlanningTool> parsePlanningTools(QXmlStreamReader &xml);
-    QList<AdditionalField> parseAdditionalFields(QXmlStreamReader &xml);
-    QList<Issue> parseIssues(QXmlStreamReader &xml);
-    QList<ProcessPhase> parseProcessPhases(QXmlStreamReader &xml);
-    QList<ChecklistItem> parseChecklistItems(QXmlStreamReader &xml);
+    QList<QSharedPointer<Checklist>> parseChecklists(QXmlStreamReader &xml);
+    QList<QSharedPointer<PlanningTool>> parsePlanningTools(QXmlStreamReader &xml);
+    QList<QSharedPointer<AdditionalField>> parseAdditionalFields(QXmlStreamReader &xml);
+    QList<QSharedPointer<Issue>> parseIssues(QXmlStreamReader &xml);
+    QList<QSharedPointer<ProcessPhase>> parseProcessPhases(QXmlStreamReader &xml);
+    QList<QSharedPointer<ChecklistItem>> parseChecklistItems(QXmlStreamReader &xml);
     QList<Dependency> parseChecklistItemDependencies(QXmlStreamReader &xml);
 
 private:
     qint64 fileSize;
     Dictionary dictionary;
-    QList<Site> sites;
+    QList<QSharedPointer<Site>> sites;
     QMap<CronosSiteXmlParser::InputXmlToken, QString> inputXmlTokens;
 
     static constexpr const char* DATE_FORMAT = "dd/MM/yyyy";

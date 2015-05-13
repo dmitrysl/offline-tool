@@ -1,6 +1,7 @@
 #ifndef EXPORTCRONOSSITEXMLGENERATOR_H
 #define EXPORTCRONOSSITEXMLGENERATOR_H
 
+#include <QDebug>
 #include <QFile>
 #include <QList>
 #include <QMap>
@@ -9,8 +10,10 @@
 
 #include "entities.h"
 
-class ExportCronosSiteXmlGenerator
+class ExportCronosSiteXmlGenerator : public QObject
 {
+    Q_OBJECT
+
 public:
     enum ExportXmlToken {
         NO_TOKEN = 0,
@@ -76,18 +79,22 @@ public:
 
     ExportCronosSiteXmlGenerator();
     ~ExportCronosSiteXmlGenerator();
-    void generateXmlFile(QFile &file, const QList<Site> &sites, const QString &userName);
+    void generateXmlFile(QFile &file, const QList<QSharedPointer<Site>> &sites, const QString &userName);
+
+signals:
+    void updateProgress(int);
 
 private:
     void initializeExportXmlTokenMap();
-    void writeSite(QXmlStreamWriter &xmlWriter, const Site &site, const QString &userName);
-    void writeSiteLogMessages(QXmlStreamWriter &xmlWriter, const QList<Message> &siteLogMessages);
-    void writeChecklists(QXmlStreamWriter &xmlWriter, const QList<Checklist> &checklists);
-    void writeChecklist(QXmlStreamWriter &xmlWriter, const Checklist &checklist);
-    void writePlanningTools(QXmlStreamWriter &xmlWriter, const QList<PlanningTool> &planningTools);
-    void writeAdditionalFields(QXmlStreamWriter &xmlWriter, const QList<AdditionalField> &additionalFields);
-    void writeIssueLog(QXmlStreamWriter &xmlWriter, const QList<Issue> &issues);
-    void writeChecklistItems(QXmlStreamWriter &xmlWriter, const QList<ChecklistItem> &checklistItems);
+    void updateProgress(qint64 currentPosition);
+    void writeSite(QXmlStreamWriter &xmlWriter, const QSharedPointer<Site> site, const QString &userName);
+    void writeSiteLogMessages(QXmlStreamWriter &xmlWriter, const QList<QSharedPointer<Message>> siteLogMessages);
+    void writeChecklists(QXmlStreamWriter &xmlWriter, const QList<QSharedPointer<Checklist>> checklists);
+    void writeChecklist(QXmlStreamWriter &xmlWriter, const QSharedPointer<Checklist> checklist);
+    void writePlanningTools(QXmlStreamWriter &xmlWriter, const QList<QSharedPointer<PlanningTool>> planningTools);
+    void writeAdditionalFields(QXmlStreamWriter &xmlWriter, const QList<QSharedPointer<AdditionalField>> additionalFields);
+    void writeIssueLog(QXmlStreamWriter &xmlWriter, const QList<QSharedPointer<Issue>> issues);
+    void writeChecklistItems(QXmlStreamWriter &xmlWriter, const QList<QSharedPointer<ChecklistItem>> checklistItems);
 
 private:
     QMap<ExportCronosSiteXmlGenerator::ExportXmlToken, QString> exportXmlTokens;
