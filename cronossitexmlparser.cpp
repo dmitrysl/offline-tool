@@ -84,9 +84,24 @@ void CronosSiteXmlParser::initializeInpuXmlTokenMap()
     inputXmlTokens.insert(InputXmlToken::IS_SELECTED, "IsSelected");
 }
 
+void CronosSiteXmlParser::updateProgress(qint64 currentPosition)
+{
+    qDebug() << "-----------";
+    qDebug() << fileSize;
+    qDebug() << currentPosition;
+    int progress = (int) (((double) currentPosition / fileSize) * 100);
+    qDebug() << progress;
+    emit updateProgress(progress);
+}
+
 void CronosSiteXmlParser::parseXmlFile(QFile &file)
 {
+    emit updateProgress(0);
+
+    fileSize = file.size();
+
     QXmlStreamReader xml(&file);
+
     while (!xml.atEnd() && !xml.hasError())
     {
         QXmlStreamReader::TokenType token = xml.readNext();
@@ -103,15 +118,22 @@ void CronosSiteXmlParser::parseXmlFile(QFile &file)
 
             if (xml.name() == inputXmlTokens[InputXmlToken::SITE])
             {
+                updateProgress(xml.characterOffset());
                 sites.append(parseSite(xml));
             }
         }
     }
+    updateProgress(100);
 }
 
 QList<Site> CronosSiteXmlParser::getResult()
 {
     return sites;
+}
+
+void CronosSiteXmlParser::clear()
+{
+    sites.clear();
 }
 
 Dictionary CronosSiteXmlParser::parseDictionary(QXmlStreamReader &xml)
@@ -429,21 +451,25 @@ Site CronosSiteXmlParser::parseSite(QXmlStreamReader &xml)
             if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PROJECT])
             {
                 site.project = parseProject(xml);
+                updateProgress(xml.characterOffset());
             }
 
             if (xml.name() == inputXmlTokens[CronosSiteXmlParser::WORKPACKAGE])
             {
                 site.workPackage = parseWorkPackage(xml);
+                updateProgress(xml.characterOffset());
             }
 
             if (xml.name() == inputXmlTokens[CronosSiteXmlParser::SITE_LOG])
             {
                 site.SiteLog = parseSiteLogMessages(xml);
+                emit updateProgress((int) (xml.characterOffset() / fileSize) * 100);
             }
 
             if (xml.name() == inputXmlTokens[CronosSiteXmlParser::SITE_DETAILS])
             {
                 site.siteDetails = parseSiteDetails(xml);
+                updateProgress(xml.characterOffset());
             }
 
             if (xml.name() == inputXmlTokens[CronosSiteXmlParser::CHECKLISTS])
@@ -722,16 +748,19 @@ QList<Checklist> CronosSiteXmlParser::parseChecklists(QXmlStreamReader &xml)
             if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PLANNING_TOOLS])
             {
                 checklist.PlanningTools = parsePlanningTools(xml);
+                updateProgress(xml.characterOffset());
             }
 
             if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ADDITIONAL_FIELDS])
             {
                 checklist.AdditionalFields = parseAdditionalFields(xml);
+                updateProgress(xml.characterOffset());
             }
 
             if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_LOG])
             {
                 checklist.Issues = parseIssues(xml);
+                updateProgress(xml.characterOffset());
             }
 
             if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PHASES])
@@ -973,6 +1002,7 @@ QList<ProcessPhase> CronosSiteXmlParser::parseProcessPhases(QXmlStreamReader &xm
             if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ITEMS])
             {
                 processPhase.Items = parseChecklistItems(xml);
+                updateProgress(xml.characterOffset());
             }
         }
 
@@ -1036,6 +1066,7 @@ QList<ChecklistItem> CronosSiteXmlParser::parseChecklistItems(QXmlStreamReader &
             if (xml.name() == inputXmlTokens[CronosSiteXmlParser::DEPENDENCIES])
             {
                 checklistItem.Dependencies = parseChecklistItemDependencies(xml);
+                emit updateProgress((int) (xml.characterOffset() / fileSize) * 100);
             }
         }
 

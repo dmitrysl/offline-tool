@@ -1,6 +1,8 @@
 #ifndef CRONOSSITEXMLPARSER_H
 #define CRONOSSITEXMLPARSER_H
 
+#include <QObject>
+#include <QDebug>
 #include <QFile>
 #include <QMap>
 
@@ -10,8 +12,10 @@
 #include "entities.h"
 
 
-class CronosSiteXmlParser
+class CronosSiteXmlParser : public QObject
 {
+    Q_OBJECT
+
 public:
     enum InputXmlToken {
         NO_TOKEN = 0,
@@ -86,13 +90,18 @@ public:
         IS_SELECTED
     };
 
-    CronosSiteXmlParser();
-    ~CronosSiteXmlParser();
+    explicit CronosSiteXmlParser();
+    virtual ~CronosSiteXmlParser();
     void parseXmlFile(QFile &file);
     QList<Site> getResult();
+    void clear();
+
+signals:
+    void updateProgress(int);
 
 private:
     void initializeInpuXmlTokenMap();
+    void updateProgress(qint64 currentPosition);
     Dictionary parseDictionary(QXmlStreamReader &xml);
     QList<IssueStatus> parseIssueStatuses(QXmlStreamReader &xml);
     QList<IssueType> parseIssueTypes(QXmlStreamReader &xml);
@@ -114,6 +123,7 @@ private:
     QList<Dependency> parseChecklistItemDependencies(QXmlStreamReader &xml);
 
 private:
+    qint64 fileSize;
     Dictionary dictionary;
     QList<Site> sites;
     QMap<CronosSiteXmlParser::InputXmlToken, QString> inputXmlTokens;

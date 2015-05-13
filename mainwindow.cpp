@@ -14,8 +14,15 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    stateProgress = new QProgressBar(this);
+    parser = new CronosSiteXmlParser();
+
+    ui->statusBar->addWidget(stateProgress);
+    stateProgress->setVisible(false);
+
     ui->exportButton->setDisabled(true);
 
+    QObject::connect(parser, SIGNAL(updateProgress(int)), stateProgress, SLOT(setValue(int)));
     connect(ui->tableView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(onTableClicked(const QModelIndex &)));
 
     initialize();
@@ -51,9 +58,12 @@ void MainWindow::on_browseFileButton_clicked()
         return;
     }
 
-    CronosSiteXmlParser parser;
-    parser.parseXmlFile(file);
-    sites = parser.getResult();
+    stateProgress->setVisible(true);
+    parser->clear();
+    parser->parseXmlFile(file);
+    sites = parser->getResult();
+
+    stateProgress->setVisible(false);
 
     file.close();
 
@@ -66,7 +76,7 @@ void MainWindow::on_browseFileButton_clicked()
 
 void MainWindow::initializeViewTable()
 {
-    model = new QStandardItemModel(2, 4, this);
+    model = new QStandardItemModel(this);
     QStandardItem *item;
 
     QStringList horizontalHeader;

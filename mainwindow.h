@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QProgressBar>
+
 #include <QStandardItemModel>
 #include <QModelIndex>
 #include <QMap>
@@ -42,7 +44,9 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    QProgressBar *stateProgress;
     QStandardItemModel *model;
+    CronosSiteXmlParser *parser;
     QList<Site> sites;
     QList<Site> updatedSites;
     bool quickDateInsert;
