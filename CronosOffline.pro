@@ -16,11 +16,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     cronossitexmlparser.cpp \
-    exportcronossitexmlgenerator.cpp
+    exportcronossitexmlgenerator.cpp \
+    delegate.cpp
 
 HEADERS  += mainwindow.h \
     entities.h \
     cronossitexmlparser.h \
-    exportcronossitexmlgenerator.h
+    exportcronossitexmlgenerator.h \
+    delegate.h
 
 FORMS    += mainwindow.ui

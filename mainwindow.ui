@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>1000</width>
     <height>600</height>
    </rect>
   </property>
@@ -24,13 +24,13 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>400</y>
-      <width>781</width>
-      <height>141</height>
+      <y>390</y>
+      <width>981</width>
+      <height>151</height>
      </rect>
     </property>
     <property name="title">
-     <string>GroupBox</string>
+     <string>Site Details</string>
     </property>
     <widget class="QComboBox" name="comboBox_2">
      <property name="geometry">
@@ -52,34 +52,21 @@
       </rect>
      </property>
     </widget>
-    <widget class="QComboBox" name="comboBox_4">
+    <widget class="QTextEdit" name="clItemComment">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>60</y>
-       <width>81</width>
-       <height>22</height>
+       <y>80</y>
+       <width>321</width>
+       <height>51</height>
       </rect>
      </property>
-    </widget>
-    <widget class="QTextEdit" name="textEdit">
-     <property name="geometry">
-      <rect>
-       <x>110</x>
-       <y>60</y>
-       <width>461</width>
-       <height>71</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QComboBox" name="comboBox_5">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>100</y>
-       <width>81</width>
-       <height>22</height>
-      </rect>
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QComboBox" name="comboBox_6">
@@ -95,21 +82,92 @@
     <widget class="QLineEdit" name="lineEdit">
      <property name="geometry">
       <rect>
-       <x>290</x>
-       <y>20</y>
+       <x>210</x>
+       <y>50</y>
        <width>121</width>
        <height>21</height>
       </rect>
      </property>
+    </widget>
+    <widget class="QDateTimeEdit" name="clItemCompletedAtDateTime">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>194</width>
+       <height>23</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="geometry">
+      <rect>
+       <x>390</x>
+       <y>10</y>
+       <width>581</width>
+       <height>131</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Issue Details</string>
+     </property>
+     <widget class="QComboBox" name="comboBox_4">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>20</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="comboBox_5">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>20</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>47</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Issue:</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="textEdit">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>72</y>
+        <width>321</width>
+        <height>51</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QTableView" name="tableView">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>40</y>
-      <width>781</width>
-      <height>341</height>
+      <y>70</y>
+      <width>981</width>
+      <height>311</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -118,11 +176,17 @@
       <verstretch>0</verstretch>
      </sizepolicy>
     </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(147, 147, 147);</string>
+    </property>
    </widget>
    <widget class="QPushButton" name="browseFileButton">
     <property name="geometry">
      <rect>
-      <x>190</x>
+      <x>10</x>
       <y>10</y>
       <width>75</width>
       <height>23</height>
@@ -141,8 +205,8 @@
    <widget class="QPushButton" name="exportButton">
     <property name="geometry">
      <rect>
-      <x>280</x>
-      <y>10</y>
+      <x>910</x>
+      <y>40</y>
       <width>75</width>
       <height>23</height>
      </rect>
@@ -157,14 +221,137 @@
      <string>Export</string>
     </property>
    </widget>
-   <widget class="QComboBox" name="comboBox">
+   <widget class="QComboBox" name="projectComboBox">
     <property name="geometry">
      <rect>
-      <x>12</x>
-      <y>13</y>
-      <width>131</width>
+      <x>240</x>
+      <y>8</y>
+      <width>161</width>
       <height>20</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="phaseComboBox">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>38</y>
+      <width>161</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="projectLabel">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>8</y>
+      <width>47</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Project:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="phaseLabel">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>40</y>
+      <width>47</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Phase:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wpLabel">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>15</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>WorkPackage:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="wpComboBox">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>10</y>
+      <width>161</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="quickDate">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>40</y>
+      <width>101</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::RightToLeft</enum>
+    </property>
+    <property name="text">
+     <string>Quick Date:</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="mergeFiles">
+    <property name="geometry">
+     <rect>
+      <x>910</x>
+      <y>10</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Merge</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="selectSites">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Select Sites</string>
     </property>
    </widget>
   </widget>
@@ -173,8 +360,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>21</height>
+     <width>1000</width>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -195,7 +382,14 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuOptions">
+    <property name="title">
+     <string>Options</string>
+    </property>
+    <addaction name="actionSelect_Time_Zone"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuOptions"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -236,6 +430,11 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionSelect_Time_Zone">
+   <property name="text">
+    <string>Select Time Zone</string>
    </property>
   </action>
  </widget>

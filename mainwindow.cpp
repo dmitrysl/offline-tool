@@ -8,6 +8,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "delegate.h"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -22,6 +24,10 @@ MainWindow::MainWindow(QWidget *parent) :
     stateProgress->setVisible(false);
 
     ui->exportButton->setDisabled(true);
+
+    ui->clItemCompletedAtDateTime->setDateTimeRange(QDateTime(QDate(2015, 2, 25), QTime(11, 35)), QDateTime(QDate(2016, 2, 25), QTime(11, 35)));
+    ui->clItemCompletedAtDateTime->setDisplayFormat(QString(DATE_TIME_FORMAT));
+    ui->clItemCompletedAtDateTime->setCalendarPopup(true);
 
     QObject::connect(parser, SIGNAL(updateProgress(int)), stateProgress, SLOT(setValue(int)));
     QObject::connect(generator, SIGNAL(updateProgress(int)), stateProgress, SLOT(setValue(int)));
@@ -118,6 +124,8 @@ void MainWindow::initializeViewTable()
             item = new QStandardItem(QString("N/A"));
             item->setEditable(false);
             item->setTextAlignment(Qt::AlignHCenter);
+            item->setBackground(QColor(Qt::white));
+            item->setForeground(QColor(Qt::black));
             model->setItem(row, col, item);
             col++;
         }
@@ -131,6 +139,8 @@ void MainWindow::initializeViewTable()
                 item = new QStandardItem(checklistItem.data()->CompletedAt.toString(DATE_FORMAT));
                 item->setEditable(false);
                 item->setTextAlignment(Qt::AlignHCenter);
+                item->setBackground(QColor(Qt::white));
+                item->setForeground(QColor(Qt::black));
                 item->setData(QVariant(QString::number(site.data()->siteDetails.SwpId)), TableCellDataType::SWP_ID);
                 item->setData(QVariant(processPhase.data()->Type), TableCellDataType::PHASE_ID);
                 item->setData(QVariant(QString::number(checklistItem.data()->Id)), TableCellDataType::CL_ITEM_ID);
@@ -157,6 +167,8 @@ void MainWindow::initializeViewTable()
     model->setColumnCount(horizontalHeader.size());
 
     ui->tableView->setModel(model);
+
+    //ui->tableView->setItemDelegate(new Delegate);
 
     ui->tableView->resizeRowsToContents();
     ui->tableView->resizeColumnsToContents();
