@@ -126,7 +126,12 @@ void CronosSiteXmlParser::parseXmlFile(QFile &file)
     updateProgress(100);
 }
 
-QList<QSharedPointer<Site>> CronosSiteXmlParser::getResult()
+Dictionary CronosSiteXmlParser::getDictionary()
+{
+    return dictionary;
+}
+
+QList<QSharedPointer<Site>> CronosSiteXmlParser::getSites()
 {
     return sites;
 }

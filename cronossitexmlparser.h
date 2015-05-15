@@ -93,7 +93,8 @@ public:
     explicit CronosSiteXmlParser();
     virtual ~CronosSiteXmlParser();
     void parseXmlFile(QFile &file);
-    QList<QSharedPointer<Site>> getResult();
+    Dictionary getDictionary();
+    QList<QSharedPointer<Site>> getSites();
     void clear();
 
 signals:

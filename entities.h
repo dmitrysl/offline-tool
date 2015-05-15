@@ -53,6 +53,15 @@ struct Dictionary
     QList<ReasonType> ReasonTypes;
     QList<IssueResponsibleParty> IssueResponsibleParties;
     QList<IssueQualityItem> IssueQualityItems;
+    bool isIssueLogDataEmpty()
+    {
+        return IssueQualityItems.isEmpty() ||
+                IssueResponsibleParties.isEmpty() ||
+                IssueStatuses.isEmpty() ||
+                IssueTypes.isEmpty() ||
+                Priorities.isEmpty() ||
+                ReasonTypes.isEmpty();
+    }
 };
 
 struct Message

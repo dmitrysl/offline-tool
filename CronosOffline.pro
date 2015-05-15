@@ -17,12 +17,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     cronossitexmlparser.cpp \
     exportcronossitexmlgenerator.cpp \
-    delegate.cpp
+    delegate.cpp \
+    importxmlvalidator.cpp
 
 HEADERS  += mainwindow.h \
     entities.h \
     cronossitexmlparser.h \
     exportcronossitexmlgenerator.h \
-    delegate.h
+    delegate.h \
+    importxmlvalidator.h
 
 FORMS    += mainwindow.ui

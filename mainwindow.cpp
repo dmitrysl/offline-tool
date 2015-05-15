@@ -5,6 +5,8 @@
 #include "QStandardItemModel"
 #include "QStandardItem"
 
+#include <QMessageBox>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -72,7 +74,8 @@ void MainWindow::on_browseFileButton_clicked()
     stateProgress->setVisible(true);
     parser->clear();
     parser->parseXmlFile(file);
-    sites = parser->getResult();
+    dictionary = parser->getDictionary();
+    sites = parser->getSites();
 
     stateProgress->setVisible(false);
 
@@ -81,6 +84,17 @@ void MainWindow::on_browseFileButton_clicked()
     statusBar()->showMessage(tr("Xml Loaded"), 4000);
 
     initializeViewTable();
+
+    if (sites.isEmpty())
+    {
+        QMessageBox::warning(this, QString("Offline Tool Notification"), QString("No sites were imported. Please check xml file."));
+        return;
+    }
+
+    if (dictionary.isIssueLogDataEmpty())
+    {
+        QMessageBox::warning(this, QString("Offline Tool Notification"), QString("No data for issue log. Work with issues is disabled."));
+    }
 
     ui->exportButton->setDisabled(false);
 }

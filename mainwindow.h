@@ -48,6 +48,7 @@ private:
     QStandardItemModel *model;
     CronosSiteXmlParser *parser;
     ExportCronosSiteXmlGenerator *generator;
+    Dictionary dictionary;
     QList<QSharedPointer<Site>> sites;
     QList<Site> updatedSites;
     bool quickDateInsert;
