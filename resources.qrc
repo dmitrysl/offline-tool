@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="cronos_export_xml_schema">resources/cronos_xml_schema.xsd</file>
+    </qresource>
+</RCC>

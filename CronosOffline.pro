@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui xmlpatterns
 CONFIG += static c++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -18,13 +18,20 @@ SOURCES += main.cpp\
     cronossitexmlparser.cpp \
     exportcronossitexmlgenerator.cpp \
     delegate.cpp \
-    importxmlvalidator.cpp
+    importxmlvalidator.cpp \
+    exportxmlfilevalidationmessagehandler.cpp
 
 HEADERS  += mainwindow.h \
     entities.h \
     cronossitexmlparser.h \
     exportcronossitexmlgenerator.h \
     delegate.h \
-    importxmlvalidator.h
+    importxmlvalidator.h \
+    exportxmlfilevalidationmessagehandler.h
 
 FORMS    += mainwindow.ui
+
+DISTFILES +=
+
+RESOURCES += \
+    resources.qrc

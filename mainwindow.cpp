@@ -11,6 +11,7 @@
 #include "ui_mainwindow.h"
 
 #include "delegate.h"
+#include "exportxmlfilevalidationmessagehandler.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -50,7 +51,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::initialize()
 {
-
+    QFile schemaFile(QString(":/cronos_export_xml_schema"));
+    schemaFile.open(QIODevice::ReadOnly);
+    schemaText(QString::fromUtf8(schemaFile.readAll()));
 }
 
 void MainWindow::on_browseFileButton_clicked()
@@ -70,6 +73,9 @@ void MainWindow::on_browseFileButton_clicked()
         statusBar()->showMessage(tr("In order to continue, select xml file."), 2000);
         return;
     }
+
+    ImportXmlValidator validator;
+    validator.validate(schemaText.toUtf8(), file.readAll());
 
     stateProgress->setVisible(true);
     parser->clear();

@@ -12,6 +12,7 @@
 #include "entities.h"
 #include "cronossitexmlparser.h"
 #include "exportcronossitexmlgenerator.h"
+#include "importxmlvalidator.h"
 
 
 namespace Ui {
@@ -48,6 +49,7 @@ private:
     QStandardItemModel *model;
     CronosSiteXmlParser *parser;
     ExportCronosSiteXmlGenerator *generator;
+    const QString schemaText;
     Dictionary dictionary;
     QList<QSharedPointer<Site>> sites;
     QList<Site> updatedSites;
