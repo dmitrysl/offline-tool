@@ -25,8 +25,10 @@ int ExportXmlFileValidationMessageHandler::column() const
     return m_sourceLocation.column();
 }
 
-virtual void ExportXmlFileValidationMessageHandler::handleMessage(QtMsgType type, const QString &description,
-                           const QUrl &identifier, const QSourceLocation &sourceLocation)
+void ExportXmlFileValidationMessageHandler::handleMessage(QtMsgType type,
+                                                          const QString &description,
+                                                          const QUrl &identifier,
+                                                          const QSourceLocation &sourceLocation)
 {
     Q_UNUSED(type);
     Q_UNUSED(identifier);

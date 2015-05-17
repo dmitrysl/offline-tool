@@ -37,12 +37,21 @@ struct IssueResponsibleParty
 {
     long Id;
     QString Name;
+    int IpmWpType;
+    long Parent;
+    long Project;
 };
 
 struct IssueQualityItem
 {
     long Id;
+    QString Code;
     QString Name;
+    int Phase;
+    long ResponsibleParty;
+    int IpmWpType;
+    long Parent;
+    long Project;
 };
 
 struct Dictionary
@@ -147,12 +156,20 @@ struct Project
 {
     long Id;
     QString Name;
+    bool operator==(const Project& other)const
+    {
+        return this->Id == other.Id;
+    }
 };
 
 struct WorkPackage
 {
     long Id;
     QString Name;
+    bool operator==(const WorkPackage& other)const
+    {
+        return this->Id == other.Id;
+    }
 };
 
 struct SiteDetails

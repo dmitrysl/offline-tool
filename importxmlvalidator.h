@@ -2,6 +2,7 @@
 #define IMPORTXMLVALIDATOR_H
 
 #include <QObject>
+#include <QFile>
 
 #include <QXmlSchema>
 #include <QXmlSchemaValidator>
@@ -15,15 +16,16 @@ public:
     explicit ImportXmlValidator(QObject *parent = 0);
     ~ImportXmlValidator();
 
-    void validate(const QByteArray schemaData, const QByteArray instanceData);
+    void validate(const QByteArray schemaData, const QByteArray &instanceData);
 
 signals:
-    void validationStatus(bool errorOccurred, const QAbstractMessageHandler messageHandler);
+    void validationStatus(bool errorOccurred, ExportXmlFileValidationMessageHandler *messageHandler);
 
 public slots:
 
 private:
     bool errorOccurred;
+    ExportXmlFileValidationMessageHandler *messageHandler;
 };
 
 #endif // IMPORTXMLVALIDATOR_H

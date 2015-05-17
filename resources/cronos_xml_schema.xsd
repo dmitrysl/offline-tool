@@ -1,2 +1,125 @@
-test
-test2
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="Sites">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Dictionary">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element name="IssueStatuses" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                                        <xs:element name="IssueStatus" type="IssueStatus" minOccurs="0" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="IssueTypes" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                                        <xs:element name="IssueType" type="IssueType" minOccurs="0" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="Priorities" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                                        <xs:element name="Priority" type="Priority" minOccurs="0" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="ReasonTypes" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                                        <xs:element name="ReasonType" type="ReasonType" minOccurs="0" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="ResponsibleParties" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                                        <xs:element name="ResponsibleParty" type="ResponsibleParty" minOccurs="0" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="QualityItems" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                                        <xs:element name="QualityItem" type="QualityItem" minOccurs="0" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:all>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+
+    <xs:complexType name="IssueStatus">
+        <xs:all>
+            <xs:element name="Id" type="xs:long" />
+            <xs:element name="Name" type="stringNotEmpty" />
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="IssueType">
+        <xs:all>
+            <xs:element name="Id" type="xs:long" />
+            <xs:element name="Name" type="stringNotEmpty" />
+            <xs:element name="IsRollback" type="xs:boolean" />
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="Priority">
+        <xs:all>
+            <xs:element name="Id" type="xs:long" />
+            <xs:element name="Name" type="stringNotEmpty" />
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="ReasonType">
+        <xs:all>
+            <xs:element name="Id" type="xs:long" />
+            <xs:element name="Name" type="stringNotEmpty" />
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="ResponsibleParty">
+        <xs:all>
+            <xs:element name="Id" type="xs:long" />
+            <xs:element name="Name" type="stringNotEmpty" />
+            <xs:element name="Parent" type="xs:long" minOccurs="0" maxOccurs="1" />
+            <xs:element name="Project" type="xs:long" minOccurs="0" maxOccurs="1" />
+            <xs:element name="IpmWpType" type="xs:long" />
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="QualityItem">
+        <xs:all>
+            <xs:element name="Id" type="xs:long" />
+            <xs:element name="Code" type="stringNotEmpty" minOccurs="0" maxOccurs="1" />
+            <xs:element name="Name" type="stringNotEmpty" />
+            <xs:element name="Phase" type="xs:long" />
+            <xs:element name="ResponsibleParty" type="xs:long" />
+            <xs:element name="Parent" type="xs:long" minOccurs="0" maxOccurs="1" />
+            <xs:element name="Project" type="xs:long" minOccurs="0" maxOccurs="1" />
+            <xs:element name="IpmWpType" type="xs:long" minOccurs="0" maxOccurs="1" />
+        </xs:all>
+    </xs:complexType>
+
+
+    <xs:simpleType name="stringNotEmpty">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1" xml:space="default"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="DateTime">
+        <xs:restriction base="xs:dateTime">
+            <xs:pattern value="\d{2}/\d{2}/\d{4}\sT\d{2}:\d{2}:\d{2}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

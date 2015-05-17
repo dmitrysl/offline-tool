@@ -2,20 +2,18 @@
 
 ImportXmlValidator::ImportXmlValidator(QObject *parent) : QObject(parent)
 {
-
+    messageHandler = new ExportXmlFileValidationMessageHandler;
 }
 
 ImportXmlValidator::~ImportXmlValidator()
 {
-
+    delete messageHandler;
 }
 
-void ImportXmlValidator::validate(const QByteArray schemaData, const QByteArray instanceData)
+void ImportXmlValidator::validate(const QByteArray schemaData, const QByteArray &instanceData)
 {
-    ExportXmlFileValidationMessageHandler messageHandler;
-
     QXmlSchema schema;
-    schema.setMessageHandler(&messageHandler);
+    schema.setMessageHandler(messageHandler);
 
     schema.load(schemaData);
 

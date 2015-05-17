@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>600</height>
+    <height>650</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>800</width>
-    <height>600</height>
+    <height>650</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -24,41 +24,21 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>390</y>
+      <y>400</y>
       <width>981</width>
-      <height>151</height>
+      <height>191</height>
      </rect>
     </property>
     <property name="title">
      <string>Site Details</string>
     </property>
-    <widget class="QComboBox" name="comboBox_2">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>20</y>
-       <width>81</width>
-       <height>22</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QComboBox" name="comboBox_3">
-     <property name="geometry">
-      <rect>
-       <x>110</x>
-       <y>20</y>
-       <width>69</width>
-       <height>22</height>
-      </rect>
-     </property>
-    </widget>
     <widget class="QTextEdit" name="clItemComment">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>80</y>
-       <width>321</width>
-       <height>51</height>
+       <x>80</x>
+       <y>110</y>
+       <width>261</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="html">
@@ -69,72 +49,178 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="comboBox_6">
-     <property name="geometry">
-      <rect>
-       <x>200</x>
-       <y>20</y>
-       <width>69</width>
-       <height>22</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="lineEdit">
-     <property name="geometry">
-      <rect>
-       <x>210</x>
-       <y>50</y>
-       <width>121</width>
-       <height>21</height>
-      </rect>
-     </property>
-    </widget>
     <widget class="QDateTimeEdit" name="clItemCompletedAtDateTime">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>50</y>
-       <width>194</width>
+       <x>80</x>
+       <y>160</y>
+       <width>131</width>
        <height>23</height>
       </rect>
+     </property>
+     <property name="dateTime">
+      <datetime>
+       <hour>21</hour>
+       <minute>0</minute>
+       <second>0</second>
+       <year>2015</year>
+       <month>9</month>
+       <day>13</day>
+      </datetime>
+     </property>
+     <property name="maximumDateTime">
+      <datetime>
+       <hour>19</hour>
+       <minute>59</minute>
+       <second>59</second>
+       <year>2020</year>
+       <month>12</month>
+       <day>31</day>
+      </datetime>
+     </property>
+     <property name="minimumDateTime">
+      <datetime>
+       <hour>22</hour>
+       <minute>0</minute>
+       <second>0</second>
+       <year>2015</year>
+       <month>2</month>
+       <day>13</day>
+      </datetime>
+     </property>
+     <property name="currentSection">
+      <enum>QDateTimeEdit::HourSection</enum>
+     </property>
+     <property name="displayFormat">
+      <string>yyyy/MM/dd hh:mm:ss</string>
+     </property>
+     <property name="calendarPopup">
+      <bool>true</bool>
+     </property>
+     <property name="timeSpec">
+      <enum>Qt::UTC</enum>
      </property>
     </widget>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="geometry">
       <rect>
-       <x>390</x>
+       <x>350</x>
        <y>10</y>
-       <width>581</width>
-       <height>131</height>
+       <width>621</width>
+       <height>171</height>
       </rect>
      </property>
      <property name="title">
       <string>Issue Details</string>
      </property>
-     <widget class="QComboBox" name="comboBox_4">
+     <widget class="QComboBox" name="issueType">
       <property name="geometry">
        <rect>
-        <x>60</x>
+        <x>50</x>
         <y>20</y>
-        <width>81</width>
+        <width>121</width>
         <height>22</height>
        </rect>
       </property>
      </widget>
-     <widget class="QComboBox" name="comboBox_5">
+     <widget class="QComboBox" name="issuePhase">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>230</x>
         <y>20</y>
-        <width>81</width>
+        <width>91</width>
         <height>22</height>
        </rect>
       </property>
      </widget>
-     <widget class="QLabel" name="label">
+     <widget class="QLabel" name="issueTypeLabel">
       <property name="geometry">
        <rect>
         <x>10</x>
+        <y>20</y>
+        <width>31</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Type:</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="issueDescription">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>80</y>
+        <width>371</width>
+        <height>51</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="issueRegularCheckbox">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>10</y>
+        <width>91</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Regular Issue</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="issueRollbackCheckbox">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>30</y>
+        <width>71</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Rollback</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="issueStatus">
+      <property name="geometry">
+       <rect>
+        <x>380</x>
+        <y>20</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="issueQualityItem">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>50</y>
+        <width>141</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="issueResponsibleParty">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>50</y>
+        <width>141</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="issuePhaseLabel">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
         <y>20</y>
         <width>47</width>
         <height>21</height>
@@ -146,19 +232,452 @@ p, li { white-space: pre-wrap; }
        </font>
       </property>
       <property name="text">
-       <string>Issue:</string>
+       <string>Phase:</string>
       </property>
      </widget>
-     <widget class="QTextEdit" name="textEdit">
+     <widget class="QLabel" name="issueStatusLabel">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>20</y>
+        <width>47</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Status:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="issueQualityItemLabel">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>72</y>
-        <width>321</width>
-        <height>51</height>
+        <y>50</y>
+        <width>71</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Qyality Item:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="issueResponsibleLabel">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>50</y>
+        <width>71</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Responsible:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="issueDescriptionLabel">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>71</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Description:</string>
+      </property>
+     </widget>
+     <widget class="QDateTimeEdit" name="issueUpdatedAtValue">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>140</y>
+        <width>141</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="maximumDateTime">
+       <datetime>
+        <hour>19</hour>
+        <minute>59</minute>
+        <second>59</second>
+        <year>2020</year>
+        <month>12</month>
+        <day>31</day>
+       </datetime>
+      </property>
+      <property name="minimumDateTime">
+       <datetime>
+        <hour>22</hour>
+        <minute>0</minute>
+        <second>0</second>
+        <year>2015</year>
+        <month>2</month>
+        <day>13</day>
+       </datetime>
+      </property>
+      <property name="currentSection">
+       <enum>QDateTimeEdit::HourSection</enum>
+      </property>
+      <property name="displayFormat">
+       <string>yyyy/MM/dd hh:mm:ss</string>
+      </property>
+      <property name="calendarPopup">
+       <bool>true</bool>
+      </property>
+      <property name="timeSpec">
+       <enum>Qt::UTC</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="issueUpdatedAtLabel">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>140</y>
+        <width>71</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Created At:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="issueUpdatedByLabel">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>142</y>
+        <width>71</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Created By:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="issueUpdatedByValue">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>140</y>
+        <width>151</width>
+        <height>20</height>
        </rect>
       </property>
      </widget>
+     <widget class="QPushButton" name="issueUpdateButton">
+      <property name="geometry">
+       <rect>
+        <x>500</x>
+        <y>140</y>
+        <width>51</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Update</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="issueDeleteButton">
+      <property name="geometry">
+       <rect>
+        <x>564</x>
+        <y>140</y>
+        <width>51</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Delete</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="issueList">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>50</y>
+        <width>91</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="issueListLabel">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>50</y>
+        <width>47</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Issues:</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="issueReasonValue">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>80</y>
+        <width>91</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="issueReasonLabel">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>80</y>
+        <width>47</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Reason:</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QPushButton" name="clItemUpdateButton">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>160</y>
+       <width>61</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Update</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="clItemTickedAtLabel">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>160</y>
+       <width>61</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Ticked At:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="clItemCommentLabel">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>110</y>
+       <width>61</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Comment:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="cscLabel">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>41</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>CSC:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="cscValue">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>20</y>
+       <width>271</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="clItemValue">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>80</y>
+       <width>271</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="clItemNameLabel">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>47</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Item:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="plannedStartDateLabel">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>121</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Planned Start Date:</string>
+     </property>
+    </widget>
+    <widget class="QDateEdit" name="plannedStartDateValue">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>50</y>
+       <width>91</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="dateTime">
+      <datetime>
+       <hour>22</hour>
+       <minute>0</minute>
+       <second>0</second>
+       <year>2015</year>
+       <month>12</month>
+       <day>31</day>
+      </datetime>
+     </property>
+     <property name="maximumDateTime">
+      <datetime>
+       <hour>19</hour>
+       <minute>59</minute>
+       <second>59</second>
+       <year>2020</year>
+       <month>12</month>
+       <day>31</day>
+      </datetime>
+     </property>
+     <property name="minimumDateTime">
+      <datetime>
+       <hour>22</hour>
+       <minute>0</minute>
+       <second>0</second>
+       <year>2015</year>
+       <month>2</month>
+       <day>13</day>
+      </datetime>
+     </property>
+     <property name="currentSection">
+      <enum>QDateTimeEdit::DaySection</enum>
+     </property>
+     <property name="displayFormat">
+      <string>yyyy/MM/dd</string>
+     </property>
+     <property name="calendarPopup">
+      <bool>true</bool>
+     </property>
+     <property name="timeSpec">
+      <enum>Qt::UTC</enum>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="planningToolsValue">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>50</y>
+       <width>111</width>
+       <height>22</height>
+      </rect>
+     </property>
     </widget>
    </widget>
    <widget class="QTableView" name="tableView">
@@ -167,7 +686,7 @@ p, li { white-space: pre-wrap; }
       <x>10</x>
       <y>70</y>
       <width>981</width>
-      <height>311</height>
+      <height>321</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -282,8 +801,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QLabel" name="wpLabel">
     <property name="geometry">
      <rect>
-      <x>560</x>
-      <y>15</y>
+      <x>410</x>
+      <y>10</y>
       <width>81</width>
       <height>21</height>
      </rect>
@@ -300,7 +819,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QComboBox" name="wpComboBox">
     <property name="geometry">
      <rect>
-      <x>650</x>
+      <x>500</x>
       <y>10</y>
       <width>161</width>
       <height>22</height>
@@ -310,8 +829,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QCheckBox" name="quickDate">
     <property name="geometry">
      <rect>
-      <x>560</x>
-      <y>40</y>
+      <x>670</x>
+      <y>10</y>
       <width>101</width>
       <height>18</height>
      </rect>

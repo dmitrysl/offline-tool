@@ -1,6 +1,6 @@
 #include "exportcronossitexmlgenerator.h"
 
-ExportCronosSiteXmlGenerator::ExportCronosSiteXmlGenerator()
+ExportCronosSiteXmlGenerator::ExportCronosSiteXmlGenerator(QObject *parent) : QObject(parent)
 {
     initializeExportXmlTokenMap();
 }

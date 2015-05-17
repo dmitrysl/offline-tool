@@ -77,7 +77,7 @@ public:
         IS_SELECTED
     };
 
-    ExportCronosSiteXmlGenerator();
+    ExportCronosSiteXmlGenerator(QObject *parent = 0);
     ~ExportCronosSiteXmlGenerator();
     void generateXmlFile(QFile &file, const QList<QSharedPointer<Site>> &sites, const QString &userName);
 

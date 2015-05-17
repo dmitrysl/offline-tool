@@ -31,6 +31,9 @@ public:
         REASSON_TYPE,
         RESPONSIBLE_PARTIES,
         QUALITY_ITEMS,
+        PARENT,
+        CODE,
+        IPM_WP_TYPE,
         SITES,
         SITE,
         TOKEN,
@@ -90,9 +93,9 @@ public:
         IS_SELECTED
     };
 
-    explicit CronosSiteXmlParser();
+    explicit CronosSiteXmlParser(QObject *parent = 0);
     virtual ~CronosSiteXmlParser();
-    void parseXmlFile(QFile &file);
+    void parseXmlFile(const QByteArray &data, const qint64 fileSize);
     Dictionary getDictionary();
     QList<QSharedPointer<Site>> getSites();
     void clear();

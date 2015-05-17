@@ -19,7 +19,9 @@ SOURCES += main.cpp\
     exportcronossitexmlgenerator.cpp \
     delegate.cpp \
     importxmlvalidator.cpp \
-    exportxmlfilevalidationmessagehandler.cpp
+    exportxmlfilevalidationmessagehandler.cpp \
+    aboutdialog.cpp \
+    selecttimezonedialog.cpp
 
 HEADERS  += mainwindow.h \
     entities.h \
@@ -27,9 +29,13 @@ HEADERS  += mainwindow.h \
     exportcronossitexmlgenerator.h \
     delegate.h \
     importxmlvalidator.h \
-    exportxmlfilevalidationmessagehandler.h
+    exportxmlfilevalidationmessagehandler.h \
+    aboutdialog.h \
+    selecttimezonedialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    aboutdialog.ui \
+    selecttimezonedialog.ui
 
 DISTFILES +=
 

@@ -1,6 +1,6 @@
 #include "cronossitexmlparser.h"
 
-CronosSiteXmlParser::CronosSiteXmlParser()
+CronosSiteXmlParser::CronosSiteXmlParser(QObject *parent) : QObject(parent)
 {
     initializeInpuXmlTokenMap();
 }
@@ -94,13 +94,13 @@ void CronosSiteXmlParser::updateProgress(qint64 currentPosition)
     emit updateProgress(progress);
 }
 
-void CronosSiteXmlParser::parseXmlFile(QFile &file)
+void CronosSiteXmlParser::parseXmlFile(const QByteArray &data, const qint64 fileSize)
 {
     emit updateProgress(0);
 
-    fileSize = file.size();
+    this->fileSize = fileSize;
 
-    QXmlStreamReader xml(&file);
+    QXmlStreamReader xml(data);
 
     while (!xml.atEnd() && !xml.hasError())
     {
@@ -110,11 +110,11 @@ void CronosSiteXmlParser::parseXmlFile(QFile &file)
 
         if (token == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[InputXmlToken::DICTIONARY])
-                dictionary = parseDictionary(xml);
-
             if (xml.name() == inputXmlTokens[InputXmlToken::SITES])
                 continue;
+
+            if (xml.name() == inputXmlTokens[InputXmlToken::DICTIONARY])
+                dictionary = parseDictionary(xml);
 
             if (xml.name() == inputXmlTokens[InputXmlToken::SITE])
             {
@@ -187,7 +187,7 @@ QList<IssueStatus> CronosSiteXmlParser::parseIssueStatuses(QXmlStreamReader &xml
     xml.readNext();
 
     IssueStatus issueStatus;
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_STATUS]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_STATUSES]))
     {
         if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_STATUS])
         {
@@ -381,6 +381,24 @@ QList<IssueResponsibleParty> CronosSiteXmlParser::parseIssueResponsibleParties(Q
                 xml.readNext();
                 responsibleParty.Name = xml.text().toString();
             }
+
+            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PARENT])
+            {
+                xml.readNext();
+                responsibleParty.Parent = xml.text().toString().toLong();
+            }
+
+            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PROJECT])
+            {
+                xml.readNext();
+                responsibleParty.Project = xml.text().toString().toLong();
+            }
+
+            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::IPM_WP_TYPE])
+            {
+                xml.readNext();
+                responsibleParty.IpmWpType = xml.text().toString().toInt();
+            }
         }
 
         if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::RESPONSIBLE_PARTY])
@@ -422,6 +440,36 @@ QList<IssueQualityItem> CronosSiteXmlParser::parseIssueQualityItems(QXmlStreamRe
             {
                 xml.readNext();
                 qualityItem.Name = xml.text().toString();
+            }
+
+            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::CODE])
+            {
+                xml.readNext();
+                qualityItem.Code = xml.text().toString();
+            }
+
+            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PHASE])
+            {
+                xml.readNext();
+                qualityItem.Phase = xml.text().toString().toInt();
+            }
+
+            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PARENT])
+            {
+                xml.readNext();
+                qualityItem.Parent = xml.text().toString().toLong();
+            }
+
+            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PROJECT])
+            {
+                xml.readNext();
+                qualityItem.Project = xml.text().toString().toLong();
+            }
+
+            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::IPM_WP_TYPE])
+            {
+                xml.readNext();
+                qualityItem.IpmWpType = xml.text().toString().toInt();
             }
         }
 
