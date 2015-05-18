@@ -10,6 +10,8 @@
 #include <QMap>
 #include <QSet>
 
+#include <QEvent>
+
 #include "entities.h"
 #include "parser/cronossitexmlparser.h"
 #include "generator/exportcronossitexmlgenerator.h"
@@ -31,7 +33,8 @@ public:
     {
         SWP_ID = 1001,
         PHASE_ID,
-        CL_ITEM_ID
+        CL_ITEM_ID,
+        PLANNING_TOOL_ID
     };
 
     explicit MainWindow(QWidget *parent = 0);
@@ -47,8 +50,10 @@ private:
     void updateVisabilityOfSiteDetailsSection(bool isDisabled, bool clearData);
     void updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPointer<ChecklistItem> checklistItem);
     QSharedPointer<Site> findSiteBySwpId(const long swpId);
+    QSharedPointer<PlanningTool> findPlanningToolById(QList<QSharedPointer<PlanningTool>> planningTools, const long itemId);
     QSharedPointer<ChecklistItem> findChecklistItemById(QSharedPointer<Site> site, const long clItemId, const int processPhaseId = 0);
     void timerEvent(QTimerEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
     void importValidationStatus(bool errorOccurred, ExportXmlFileValidationMessageHandler *messageHandler);
@@ -62,9 +67,7 @@ private slots:
     void on_actionAbout_triggered();
     void on_actionSelect_Time_Zone_triggered();
     void on_actionExit_triggered();
-
     void on_clItemUpdateButton_clicked();
-
     void on_planningToolsValue_activated(int index);
 
 private:

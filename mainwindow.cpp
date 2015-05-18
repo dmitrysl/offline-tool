@@ -485,13 +485,75 @@ void MainWindow::updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPoin
 
                 item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
                 item->setData(planningTool.data()->IsSelected ? Qt::Checked : Qt::Unchecked, Qt::CheckStateRole);
-                item->setData(QVariant(QString::number(planningTool.data()->Id)));
-                //QObject::connect(item, SIGNAL(itemChanged(QStandardItem *item)))
+                item->setData(QVariant(QString::number(planningTool.data()->Id)), TableCellDataType::PLANNING_TOOL_ID);
 
                 planningToolsModel->setItem(i, 0, item);
             }
             ui->planningToolsValue->setModel(planningToolsModel);
+            ui->planningToolsValue->view()->viewport()->installEventFilter(this);
         }
+    }
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj != ui->planningToolsValue->view()->viewport()) return QObject::eventFilter(obj, event);
+    if (event->type() == QEvent::MouseButtonRelease) {
+        int index = ui->planningToolsValue->view()->currentIndex().row();
+
+        int numberOfSelectedItems = 0;
+        const int size = ui->planningToolsValue->model()->rowCount();
+        QList<QSharedPointer<PlanningTool>> plannigTools = selectedSite.data()->Checklists[0].data()->PlanningTools;
+        for (int i = 0; i < size; i++)
+        {
+            QVariant qVariant = ui->planningToolsValue->itemData(i, TableCellDataType::PLANNING_TOOL_ID);
+            const long toolId = qVariant.toString().toLong();
+
+            bool isSelected = ui->planningToolsValue->itemData(i, Qt::CheckStateRole) == Qt::Checked;
+            if (isSelected)
+            {
+                numberOfSelectedItems++;
+            }
+            QSharedPointer<PlanningTool> planningTool = findPlanningToolById(plannigTools, toolId);
+            if (!planningTool.isNull())
+            {
+                planningTool.data()->IsSelected = isSelected;
+            }
+        }
+
+        if (numberOfSelectedItems == 3 && ui->planningToolsValue->itemData(index, Qt::CheckStateRole) == Qt::Unchecked)
+        {
+            return true;
+        }
+
+        bool isSelected = ui->planningToolsValue->itemData(index, Qt::CheckStateRole) == Qt::Checked;
+
+        if (isSelected)
+        {
+            ui->planningToolsValue->setItemData(index, Qt::Unchecked, Qt::CheckStateRole);
+        }
+        else
+        {
+            ui->planningToolsValue->setItemData(index, Qt::Checked, Qt::CheckStateRole);
+        }
+
+        for (int i = 0; i < size; i++)
+        {
+            QVariant qVariant = ui->planningToolsValue->itemData(i, TableCellDataType::PLANNING_TOOL_ID);
+            const long toolId = qVariant.toString().toLong();
+
+            bool isSelected = ui->planningToolsValue->itemData(i, Qt::CheckStateRole) == Qt::Checked;
+            QSharedPointer<PlanningTool> planningTool = findPlanningToolById(plannigTools, toolId);
+            if (!planningTool.isNull())
+            {
+                planningTool.data()->IsSelected = isSelected;
+            }
+        }
+
+        return true;
+    } else {
+        // Propagate to the parent class.
+        return QObject::eventFilter(obj, event);
     }
 }
 
@@ -505,6 +567,17 @@ QSharedPointer<Site> MainWindow::findSiteBySwpId(const long swpId)
         return site;
     }
     return QSharedPointer<Site>(0);
+}
+
+QSharedPointer<PlanningTool> MainWindow::findPlanningToolById(QList<QSharedPointer<PlanningTool>> planningTools, const long itemId)
+{
+    QMutableListIterator<QSharedPointer<PlanningTool>> planningToolsIterator(planningTools);
+    while(planningToolsIterator.hasNext())
+    {
+        QSharedPointer<PlanningTool> planningTool = planningToolsIterator.next();
+        if (planningTool.data()->Id == itemId) return planningTool;
+    }
+    return QSharedPointer<PlanningTool>(0);
 }
 
 QSharedPointer<ChecklistItem> MainWindow::findChecklistItemById(QSharedPointer<Site> site, const long clItemId, const int processPhaseId)
