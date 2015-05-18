@@ -15,27 +15,25 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    cronossitexmlparser.cpp \
-    exportcronossitexmlgenerator.cpp \
-    delegate.cpp \
-    importxmlvalidator.cpp \
-    exportxmlfilevalidationmessagehandler.cpp \
-    aboutdialog.cpp \
-    selecttimezonedialog.cpp
+    parser/cronossitexmlparser.cpp \
+    generator/exportcronossitexmlgenerator.cpp \
+    parser/importxmlvalidator.cpp \
+    parser/exportxmlfilevalidationmessagehandler.cpp \
+    dialog/aboutdialog.cpp \
+    dialog/selecttimezonedialog.cpp
 
 HEADERS  += mainwindow.h \
     entities.h \
-    cronossitexmlparser.h \
-    exportcronossitexmlgenerator.h \
-    delegate.h \
-    importxmlvalidator.h \
-    exportxmlfilevalidationmessagehandler.h \
-    aboutdialog.h \
-    selecttimezonedialog.h
+    parser/cronossitexmlparser.h \
+    generator/exportcronossitexmlgenerator.h \
+    parser/importxmlvalidator.h \
+    parser/exportxmlfilevalidationmessagehandler.h \
+    dialog/aboutdialog.h \
+    dialog/selecttimezonedialog.h
 
 FORMS    += mainwindow.ui \
-    aboutdialog.ui \
-    selecttimezonedialog.ui
+    dialog/aboutdialog.ui \
+    dialog/selecttimezonedialog.ui
 
 DISTFILES +=
 

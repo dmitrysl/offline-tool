@@ -10,8 +10,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "delegate.h"
-#include "exportxmlfilevalidationmessagehandler.h"
+#include "parser/exportxmlfilevalidationmessagehandler.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -89,6 +88,7 @@ void MainWindow::initialize()
 
 void MainWindow::timerEvent(QTimerEvent *event)
 {
+    Q_UNUSED(event)
     currentTimeLabel->setText(QDateTime::currentDateTimeUtc().toTimeZone(selectedTimeZone).toString(DATE_TIME_FORMAT));
 }
 

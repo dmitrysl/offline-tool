@@ -11,11 +11,11 @@
 #include <QSet>
 
 #include "entities.h"
-#include "cronossitexmlparser.h"
-#include "exportcronossitexmlgenerator.h"
-#include "importxmlvalidator.h"
-#include "selecttimezonedialog.h"
-#include "aboutdialog.h"
+#include "parser/cronossitexmlparser.h"
+#include "generator/exportcronossitexmlgenerator.h"
+#include "parser/importxmlvalidator.h"
+#include "dialog/selecttimezonedialog.h"
+#include "dialog/aboutdialog.h"
 
 
 namespace Ui {
