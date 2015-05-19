@@ -193,7 +193,7 @@ QList<IssueStatus> CronosSiteXmlParser::parseIssueStatuses(QXmlStreamReader &xml
     {
         if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_STATUS])
         {
-            issueStatus = {0};
+            issueStatus = IssueStatus();
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
@@ -235,7 +235,7 @@ QList<IssueType> CronosSiteXmlParser::parseIssueTypes(QXmlStreamReader &xml)
     {
         if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_TYPE])
         {
-            issueType = {0};
+            issueType = IssueType();
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
@@ -283,7 +283,7 @@ QList<Priority> CronosSiteXmlParser::parsePriorities(QXmlStreamReader &xml)
     {
         if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::PRIORITY])
         {
-            priority = {0};
+            priority = Priority();
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
@@ -325,7 +325,7 @@ QList<ReasonType> CronosSiteXmlParser::parseReasonTypes(QXmlStreamReader &xml)
     {
         if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::REASSON_TYPE])
         {
-            reasonType = {0};
+            reasonType = ReasonType();
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
@@ -367,7 +367,7 @@ QList<IssueResponsibleParty> CronosSiteXmlParser::parseIssueResponsibleParties(Q
     {
         if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::RESPONSIBLE_PARTY])
         {
-            responsibleParty = {0};
+            responsibleParty = IssueResponsibleParty();
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
@@ -427,7 +427,7 @@ QList<IssueQualityItem> CronosSiteXmlParser::parseIssueQualityItems(QXmlStreamRe
     {
         if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::QUALITY_ITEM])
         {
-            qualityItem = {0};
+            qualityItem = IssueQualityItem();
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
@@ -1146,7 +1146,7 @@ QList<Dependency> CronosSiteXmlParser::parseChecklistItemDependencies(QXmlStream
     {
         if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::DEPENDENCY])
         {
-            dependency = {0};
+            dependency = Dependency();
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)

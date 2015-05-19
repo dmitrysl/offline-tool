@@ -10,7 +10,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "parser/exportxmlfilevalidationmessagehandler.h"
+#include "parser/importxmlfilevalidationmessagehandler.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -71,7 +71,7 @@ void MainWindow::initialize()
     parser = new CronosSiteXmlParser(this);
     generator = new ExportCronosSiteXmlGenerator(this);
 
-    QObject::connect(validator, SIGNAL(validationStatus(bool,ExportXmlFileValidationMessageHandler*)), this, SLOT(importValidationStatus(bool, ExportXmlFileValidationMessageHandler*)));
+    QObject::connect(validator, SIGNAL(validationStatus(bool,ImportXmlFileValidationMessageHandler*)), this, SLOT(importValidationStatus(bool, ImportXmlFileValidationMessageHandler*)));
     QObject::connect(parser, SIGNAL(updateProgress(int)), stateProgress, SLOT(setValue(int)));
     //QObject::connect(generator, SIGNAL(updateProgress(int)), stateProgress, SLOT(setValue(int)));
 
@@ -92,7 +92,7 @@ void MainWindow::timerEvent(QTimerEvent *event)
     currentTimeLabel->setText(QDateTime::currentDateTimeUtc().toTimeZone(selectedTimeZone).toString(DATE_TIME_FORMAT));
 }
 
-void MainWindow::importValidationStatus(bool errorOccurred, ExportXmlFileValidationMessageHandler *messageHandler)
+void MainWindow::importValidationStatus(bool errorOccurred, ImportXmlFileValidationMessageHandler *messageHandler)
 {
     qDebug() << errorOccurred;
     qDebug() << messageHandler->statusMessage();
@@ -705,10 +705,12 @@ void MainWindow::on_planningToolsValue_activated(int index)
 
 void MainWindow::on_issueRegularCheckbox_clicked(bool checked)
 {
+    Q_UNUSED(checked);
     ui->issueRollbackCheckbox->setChecked(false);
 }
 
 void MainWindow::on_issueRollbackCheckbox_clicked(bool checked)
 {
+    Q_UNUSED(checked);
     ui->issueRegularCheckbox->setChecked(false);
 }

@@ -1,31 +1,31 @@
-#include "exportxmlfilevalidationmessagehandler.h"
+#include "importxmlfilevalidationmessagehandler.h"
 
-ExportXmlFileValidationMessageHandler::ExportXmlFileValidationMessageHandler()
+ImportXmlFileValidationMessageHandler::ImportXmlFileValidationMessageHandler()
 {
 
 }
 
-ExportXmlFileValidationMessageHandler::~ExportXmlFileValidationMessageHandler()
+ImportXmlFileValidationMessageHandler::~ImportXmlFileValidationMessageHandler()
 {
 
 }
 
-QString ExportXmlFileValidationMessageHandler::statusMessage() const
+QString ImportXmlFileValidationMessageHandler::statusMessage() const
 {
     return m_description;
 }
 
-int ExportXmlFileValidationMessageHandler::line() const
+int ImportXmlFileValidationMessageHandler::line() const
 {
     return m_sourceLocation.line();
 }
 
-int ExportXmlFileValidationMessageHandler::column() const
+int ImportXmlFileValidationMessageHandler::column() const
 {
     return m_sourceLocation.column();
 }
 
-void ExportXmlFileValidationMessageHandler::handleMessage(QtMsgType type,
+void ImportXmlFileValidationMessageHandler::handleMessage(QtMsgType type,
                                                           const QString &description,
                                                           const QUrl &identifier,
                                                           const QSourceLocation &sourceLocation)

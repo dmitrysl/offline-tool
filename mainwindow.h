@@ -57,7 +57,7 @@ private:
     bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
-    void importValidationStatus(bool errorOccurred, ExportXmlFileValidationMessageHandler *messageHandler);
+    void importValidationStatus(bool errorOccurred, ImportXmlFileValidationMessageHandler *messageHandler);
     void on_browseFileButton_clicked();
     void on_exportButton_clicked();
     void onTableClicked(const QModelIndex &index);
@@ -70,6 +70,8 @@ private slots:
     void on_actionExit_triggered();
     void on_clItemUpdateButton_clicked();
     void on_planningToolsValue_activated(int index);
+    void on_issueRegularCheckbox_clicked(bool checked);
+    void on_issueRollbackCheckbox_clicked(bool checked);
 
 private:
     Ui::MainWindow *ui;

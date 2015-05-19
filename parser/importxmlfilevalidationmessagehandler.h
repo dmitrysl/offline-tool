@@ -6,11 +6,11 @@
 #include <QUrl>
 #include <QtXmlPatterns/QSourceLocation>
 
-class ExportXmlFileValidationMessageHandler : public QAbstractMessageHandler
+class ImportXmlFileValidationMessageHandler : public QAbstractMessageHandler
 {
 public:
-    ExportXmlFileValidationMessageHandler();
-    ~ExportXmlFileValidationMessageHandler();
+    ImportXmlFileValidationMessageHandler();
+    ~ImportXmlFileValidationMessageHandler();
 
     QString statusMessage() const;
     int line() const;

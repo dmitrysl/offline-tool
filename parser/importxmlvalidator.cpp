@@ -2,7 +2,7 @@
 
 ImportXmlValidator::ImportXmlValidator(QObject *parent) : QObject(parent)
 {
-    messageHandler = new ExportXmlFileValidationMessageHandler;
+    messageHandler = new ImportXmlFileValidationMessageHandler;
 }
 
 ImportXmlValidator::~ImportXmlValidator()

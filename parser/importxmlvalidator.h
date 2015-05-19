@@ -7,7 +7,7 @@
 #include <QXmlSchema>
 #include <QXmlSchemaValidator>
 
-#include "exportxmlfilevalidationmessagehandler.h"
+#include "importxmlfilevalidationmessagehandler.h"
 
 class ImportXmlValidator : public QObject
 {
@@ -19,13 +19,13 @@ public:
     void validate(const QByteArray schemaData, const QByteArray &instanceData);
 
 signals:
-    void validationStatus(bool errorOccurred, ExportXmlFileValidationMessageHandler *messageHandler);
+    void validationStatus(bool errorOccurred, ImportXmlFileValidationMessageHandler *messageHandler);
 
 public slots:
 
 private:
     bool errorOccurred;
-    ExportXmlFileValidationMessageHandler *messageHandler;
+    ImportXmlFileValidationMessageHandler *messageHandler;
 };
 
 #endif // IMPORTXMLVALIDATOR_H

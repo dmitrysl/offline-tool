@@ -18,20 +18,20 @@ SOURCES += main.cpp\
     parser/cronossitexmlparser.cpp \
     generator/exportcronossitexmlgenerator.cpp \
     parser/importxmlvalidator.cpp \
-    parser/exportxmlfilevalidationmessagehandler.cpp \
     dialog/aboutdialog.cpp \
     dialog/selecttimezonedialog.cpp \
-    utils.cpp
+    utils.cpp \
+    parser/importxmlfilevalidationmessagehandler.cpp
 
 HEADERS  += mainwindow.h \
     entities.h \
     parser/cronossitexmlparser.h \
     generator/exportcronossitexmlgenerator.h \
     parser/importxmlvalidator.h \
-    parser/exportxmlfilevalidationmessagehandler.h \
     dialog/aboutdialog.h \
     dialog/selecttimezonedialog.h \
-    utils.h
+    utils.h \
+    parser/importxmlfilevalidationmessagehandler.h
 
 FORMS    += mainwindow.ui \
     dialog/aboutdialog.ui \
