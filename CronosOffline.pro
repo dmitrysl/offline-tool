@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     parser/importxmlvalidator.cpp \
     parser/exportxmlfilevalidationmessagehandler.cpp \
     dialog/aboutdialog.cpp \
-    dialog/selecttimezonedialog.cpp
+    dialog/selecttimezonedialog.cpp \
+    utils.cpp
 
 HEADERS  += mainwindow.h \
     entities.h \
@@ -29,7 +30,8 @@ HEADERS  += mainwindow.h \
     parser/importxmlvalidator.h \
     parser/exportxmlfilevalidationmessagehandler.h \
     dialog/aboutdialog.h \
-    dialog/selecttimezonedialog.h
+    dialog/selecttimezonedialog.h \
+    utils.h
 
 FORMS    += mainwindow.ui \
     dialog/aboutdialog.ui \

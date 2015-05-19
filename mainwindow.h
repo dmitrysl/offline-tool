@@ -13,6 +13,7 @@
 #include <QEvent>
 
 #include "entities.h"
+#include "utils.h"
 #include "parser/cronossitexmlparser.h"
 #include "generator/exportcronossitexmlgenerator.h"
 #include "parser/importxmlvalidator.h"

@@ -25,6 +25,8 @@ void CronosSiteXmlParser::initializeInpuXmlTokenMap()
     inputXmlTokens.insert(InputXmlToken::REASSON_TYPE, "ReasonType");
     inputXmlTokens.insert(InputXmlToken::RESPONSIBLE_PARTIES, "ResponsibleParties");
     inputXmlTokens.insert(InputXmlToken::QUALITY_ITEMS, "QualityItems");
+    inputXmlTokens.insert(InputXmlToken::CODE, "Code");
+    inputXmlTokens.insert(InputXmlToken::PARENT, "Parent");
     inputXmlTokens.insert(InputXmlToken::SITES, "Sites");
     inputXmlTokens.insert(InputXmlToken::SITE, "Site");
     inputXmlTokens.insert(InputXmlToken::TOKEN, "Token");

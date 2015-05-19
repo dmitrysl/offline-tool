@@ -237,7 +237,11 @@ void MainWindow::loadDictionaryData()
 
     foreach (const IssueQualityItem &qualityItem, dictionary.IssueQualityItems)
     {
-        ui->issueQualityItem->addItem("(" + qualityItem.Code + ") " + qualityItem.Name, QVariant(QString::number(qualityItem.Id)));
+        IssueQualityItem parentQualityItem;
+        if (qualityItem.Parent != 0)
+            parentQualityItem = Utils::findQualityItemById(dictionary, qualityItem.Id);
+        QString qualityItemName = "(" + (parentQualityItem.Code.isEmpty() ? qualityItem.Code : parentQualityItem.Code) + ") " + qualityItem.Name;
+        ui->issueQualityItem->addItem(qualityItemName, QVariant(QString::number(qualityItem.Id)));
     }
     updateIssueLogStatus(false, true);
 }
@@ -452,7 +456,7 @@ void MainWindow::updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPoin
 
     if (checklistItem.data()->CompletedAt.isValid())
     {
-        ui->clItemCompletedAtDateTime->setDateTime(checklistItem.data()->CompletedAt);
+        ui->clItemCompletedAtDateTime->setDateTime(checklistItem.data()->CompletedAt.toTimeZone(selectedTimeZone));
     }
     else
     {
@@ -492,6 +496,19 @@ void MainWindow::updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPoin
             ui->planningToolsValue->setModel(planningToolsModel);
             ui->planningToolsValue->view()->viewport()->installEventFilter(this);
         }
+    }
+
+    ui->issueList->clear();
+    QListIterator<QSharedPointer<Issue>> issueIterator(checklist.data()->Issues);
+    while(issueIterator.hasNext())
+    {
+        QSharedPointer<Issue> issue = issueIterator.next();
+        IssueQualityItem qualityItem = Utils::findQualityItemById(dictionary, issue.data()->QualityItem);
+        IssueQualityItem parentQualityItem;
+        if (qualityItem.Parent != 0)
+            parentQualityItem = Utils::findQualityItemById(dictionary, qualityItem.Id);
+        QString qualityItemName = "(" + (parentQualityItem.Code.isEmpty() ? qualityItem.Code : parentQualityItem.Code) + ") " + qualityItem.Name;
+        ui->issueList->addItem(qualityItemName, QVariant(QString::number(qualityItem.Id)));
     }
 }
 
@@ -684,4 +701,14 @@ void MainWindow::on_planningToolsValue_activated(int index)
     {
         ui->planningToolsValue->setItemData(index, Qt::Unchecked, Qt::CheckStateRole);
     }
+}
+
+void MainWindow::on_issueRegularCheckbox_clicked(bool checked)
+{
+    ui->issueRollbackCheckbox->setChecked(false);
+}
+
+void MainWindow::on_issueRollbackCheckbox_clicked(bool checked)
+{
+    ui->issueRegularCheckbox->setChecked(false);
 }
