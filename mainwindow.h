@@ -14,7 +14,7 @@
 
 #include "entities.h"
 #include "utils.h"
-#include "parser/cronossitexmlparser.h"
+#include "parser/importfilexmlparser.h"
 #include "generator/exportcronossitexmlgenerator.h"
 #include "parser/importxmlvalidator.h"
 #include "dialog/selecttimezonedialog.h"
@@ -50,9 +50,6 @@ private:
     void updateChecklistItemStatus(bool isDisabled);
     void updateVisabilityOfSiteDetailsSection(bool isDisabled, bool clearData);
     void updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPointer<ChecklistItem> checklistItem);
-    QSharedPointer<Site> findSiteBySwpId(const long swpId);
-    QSharedPointer<PlanningTool> findPlanningToolById(QList<QSharedPointer<PlanningTool>> planningTools, const long itemId);
-    QSharedPointer<ChecklistItem> findChecklistItemById(QSharedPointer<Site> site, const long clItemId, const int processPhaseId = 0);
     void timerEvent(QTimerEvent *event);
     bool eventFilter(QObject *obj, QEvent *event);
 
@@ -87,7 +84,7 @@ private:
 
     bool importFailed;
     ImportXmlValidator *validator;
-    CronosSiteXmlParser *parser;
+    ImportFileXmlParser *parser;
     ExportCronosSiteXmlGenerator *generator;
     QString schemaText;
 

@@ -15,23 +15,23 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    parser/cronossitexmlparser.cpp \
     generator/exportcronossitexmlgenerator.cpp \
     parser/importxmlvalidator.cpp \
+    parser/importxmlfilevalidationmessagehandler.cpp \
+    parser/importfilexmlparser.cpp \
     dialog/aboutdialog.cpp \
     dialog/selecttimezonedialog.cpp \
-    utils.cpp \
-    parser/importxmlfilevalidationmessagehandler.cpp
+    utils.cpp
 
 HEADERS  += mainwindow.h \
     entities.h \
-    parser/cronossitexmlparser.h \
     generator/exportcronossitexmlgenerator.h \
     parser/importxmlvalidator.h \
+    parser/importxmlfilevalidationmessagehandler.h \
+    parser/importfilexmlparser.h \
     dialog/aboutdialog.h \
     dialog/selecttimezonedialog.h \
-    utils.h \
-    parser/importxmlfilevalidationmessagehandler.h
+    utils.h
 
 FORMS    += mainwindow.ui \
     dialog/aboutdialog.ui \

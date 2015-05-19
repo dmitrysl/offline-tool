@@ -12,7 +12,7 @@
 #include "entities.h"
 
 
-class CronosSiteXmlParser : public QObject
+class ImportFileXmlParser : public QObject
 {
     Q_OBJECT
 
@@ -93,8 +93,8 @@ public:
         IS_SELECTED
     };
 
-    explicit CronosSiteXmlParser(QObject *parent = 0);
-    virtual ~CronosSiteXmlParser();
+    explicit ImportFileXmlParser(QObject *parent = 0);
+    virtual ~ImportFileXmlParser();
     void parseXmlFile(const QByteArray &data, const qint64 fileSize);
     Dictionary getDictionary();
     QList<QSharedPointer<Site>> getSites();
@@ -130,7 +130,7 @@ private:
     qint64 fileSize;
     Dictionary dictionary;
     QList<QSharedPointer<Site>> sites;
-    QMap<CronosSiteXmlParser::InputXmlToken, QString> inputXmlTokens;
+    QMap<ImportFileXmlParser::InputXmlToken, QString> inputXmlTokens;
 
     static constexpr const char* DATE_FORMAT = "dd/MM/yyyy";
     static constexpr const char* DATE_TIME_FORMAT = "dd/MM/yyyy hh:mm:ss";

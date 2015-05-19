@@ -68,7 +68,7 @@ void MainWindow::initialize()
     schemaText = QString::fromUtf8(data);
 
     validator = new ImportXmlValidator(this);
-    parser = new CronosSiteXmlParser(this);
+    parser = new ImportFileXmlParser(this);
     generator = new ExportCronosSiteXmlGenerator(this);
 
     QObject::connect(validator, SIGNAL(validationStatus(bool,ImportXmlFileValidationMessageHandler*)), this, SLOT(importValidationStatus(bool, ImportXmlFileValidationMessageHandler*)));
@@ -375,8 +375,8 @@ void MainWindow::onTableClicked(const QModelIndex &index)
     const int processPhaseId = index.data(TableCellDataType::PHASE_ID).toString().toInt();
     const long clItemId = index.data(TableCellDataType::CL_ITEM_ID).toString().toLong();
 
-    selectedSite = findSiteBySwpId(swpId);
-    selectedChecklistItem = findChecklistItemById(selectedSite, clItemId, processPhaseId);
+    selectedSite = Utils::findSiteBySwpId(sites, swpId);
+    selectedChecklistItem = Utils::findChecklistItemById(selectedSite, clItemId, processPhaseId);
 
     updateSiteDetailsSection(selectedSite, selectedChecklistItem);
 
@@ -531,7 +531,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             {
                 numberOfSelectedItems++;
             }
-            QSharedPointer<PlanningTool> planningTool = findPlanningToolById(plannigTools, toolId);
+            QSharedPointer<PlanningTool> planningTool = Utils::findPlanningToolById(plannigTools, toolId);
             if (!planningTool.isNull())
             {
                 planningTool.data()->IsSelected = isSelected;
@@ -560,7 +560,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             const long toolId = qVariant.toString().toLong();
 
             bool isSelected = ui->planningToolsValue->itemData(i, Qt::CheckStateRole) == Qt::Checked;
-            QSharedPointer<PlanningTool> planningTool = findPlanningToolById(plannigTools, toolId);
+            QSharedPointer<PlanningTool> planningTool = Utils::findPlanningToolById(plannigTools, toolId);
             if (!planningTool.isNull())
             {
                 planningTool.data()->IsSelected = isSelected;
@@ -572,48 +572,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         // Propagate to the parent class.
         return QObject::eventFilter(obj, event);
     }
-}
-
-QSharedPointer<Site> MainWindow::findSiteBySwpId(const long swpId)
-{
-    QMutableListIterator<QSharedPointer<Site>> siteIterator(sites);
-    while(siteIterator.hasNext())
-    {
-        QSharedPointer<Site> site = siteIterator.next();
-        if (site.data()->siteDetails.SwpId != swpId) continue;
-        return site;
-    }
-    return QSharedPointer<Site>(0);
-}
-
-QSharedPointer<PlanningTool> MainWindow::findPlanningToolById(QList<QSharedPointer<PlanningTool>> planningTools, const long itemId)
-{
-    QMutableListIterator<QSharedPointer<PlanningTool>> planningToolsIterator(planningTools);
-    while(planningToolsIterator.hasNext())
-    {
-        QSharedPointer<PlanningTool> planningTool = planningToolsIterator.next();
-        if (planningTool.data()->Id == itemId) return planningTool;
-    }
-    return QSharedPointer<PlanningTool>(0);
-}
-
-QSharedPointer<ChecklistItem> MainWindow::findChecklistItemById(QSharedPointer<Site> site, const long clItemId, const int processPhaseId)
-{
-    QMutableListIterator<QSharedPointer<Checklist>> checklistsIterator(site.data()->Checklists);
-    QMutableListIterator<QSharedPointer<ProcessPhase>> phaseIterator(checklistsIterator.next().data()->ProcessPhases);
-    while(phaseIterator.hasNext())
-    {
-        QSharedPointer<ProcessPhase> phase = phaseIterator.next();
-        if (phase.data()->Type != processPhaseId) continue;
-        QMutableListIterator<QSharedPointer<ChecklistItem>> clItemIterator(phase.data()->Items);
-        while(clItemIterator.hasNext())
-        {
-            QSharedPointer<ChecklistItem> item = clItemIterator.next();
-            if (item.data()->Id != clItemId) continue;
-            return item;
-        }
-    }
-    return QSharedPointer<ChecklistItem>(0);
 }
 
 void MainWindow::on_quickDate_clicked(bool checked)

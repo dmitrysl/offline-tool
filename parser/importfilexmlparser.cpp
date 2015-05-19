@@ -1,16 +1,16 @@
-#include "cronossitexmlparser.h"
+#include "importfilexmlparser.h"
 
-CronosSiteXmlParser::CronosSiteXmlParser(QObject *parent) : QObject(parent)
+ImportFileXmlParser::ImportFileXmlParser(QObject *parent) : QObject(parent)
 {
     initializeInpuXmlTokenMap();
 }
 
-CronosSiteXmlParser::~CronosSiteXmlParser()
+ImportFileXmlParser::~ImportFileXmlParser()
 {
 
 }
 
-void CronosSiteXmlParser::initializeInpuXmlTokenMap()
+void ImportFileXmlParser::initializeInpuXmlTokenMap()
 {
     inputXmlTokens.insert(InputXmlToken::NO_TOKEN, "");
     inputXmlTokens.insert(InputXmlToken::DICTIONARY, "Dictionary");
@@ -86,7 +86,7 @@ void CronosSiteXmlParser::initializeInpuXmlTokenMap()
     inputXmlTokens.insert(InputXmlToken::IS_SELECTED, "IsSelected");
 }
 
-void CronosSiteXmlParser::updateProgress(qint64 currentPosition)
+void ImportFileXmlParser::updateProgress(qint64 currentPosition)
 {
     qDebug() << "-----------";
     qDebug() << fileSize;
@@ -96,7 +96,7 @@ void CronosSiteXmlParser::updateProgress(qint64 currentPosition)
     emit updateProgress(progress);
 }
 
-void CronosSiteXmlParser::parseXmlFile(const QByteArray &data, const qint64 fileSize)
+void ImportFileXmlParser::parseXmlFile(const QByteArray &data, const qint64 fileSize)
 {
     emit updateProgress(0);
 
@@ -128,49 +128,49 @@ void CronosSiteXmlParser::parseXmlFile(const QByteArray &data, const qint64 file
     updateProgress(100);
 }
 
-Dictionary CronosSiteXmlParser::getDictionary()
+Dictionary ImportFileXmlParser::getDictionary()
 {
     return dictionary;
 }
 
-QList<QSharedPointer<Site>> CronosSiteXmlParser::getSites()
+QList<QSharedPointer<Site>> ImportFileXmlParser::getSites()
 {
     return sites;
 }
 
-void CronosSiteXmlParser::clear()
+void ImportFileXmlParser::clear()
 {
     sites.clear();
 }
 
-Dictionary CronosSiteXmlParser::parseDictionary(QXmlStreamReader &xml)
+Dictionary ImportFileXmlParser::parseDictionary(QXmlStreamReader &xml)
 {
     Dictionary dictionary;
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::DICTIONARY])
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::DICTIONARY])
         return dictionary;
 
     xml.readNext();
 
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::DICTIONARY]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::DICTIONARY]))
     {
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_STATUSES])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ISSUE_STATUSES])
                 dictionary.IssueStatuses = parseIssueStatuses(xml);
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_TYPES])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ISSUE_TYPES])
                 dictionary.IssueTypes = parseIssueTypes(xml);
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PRIORITIES])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::PRIORITIES])
                 dictionary.Priorities = parsePriorities(xml);
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::REASON_TYPES])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::REASON_TYPES])
                 dictionary.ReasonTypes = parseReasonTypes(xml);
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::RESPONSIBLE_PARTIES])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::RESPONSIBLE_PARTIES])
                 dictionary.IssueResponsibleParties = parseIssueResponsibleParties(xml);
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::QUALITY_ITEMS])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::QUALITY_ITEMS])
                 dictionary.IssueQualityItems = parseIssueQualityItems(xml);
         }
         xml.readNext();
@@ -179,39 +179,39 @@ Dictionary CronosSiteXmlParser::parseDictionary(QXmlStreamReader &xml)
     return dictionary;
 }
 
-QList<IssueStatus> CronosSiteXmlParser::parseIssueStatuses(QXmlStreamReader &xml)
+QList<IssueStatus> ImportFileXmlParser::parseIssueStatuses(QXmlStreamReader &xml)
 {
     QList<IssueStatus> issueStatuses;
 
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_STATUSES])
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::ISSUE_STATUSES])
         return issueStatuses;
 
     xml.readNext();
 
     IssueStatus issueStatus;
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_STATUSES]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::ISSUE_STATUSES]))
     {
-        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_STATUS])
+        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::ISSUE_STATUS])
         {
             issueStatus = IssueStatus();
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ID])
             {
                 xml.readNext();
                 issueStatus.Id = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::NAME])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::NAME])
             {
                 xml.readNext();
                 issueStatus.Name = xml.text().toString();
             }
         }
 
-        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_STATUS])
+        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::ISSUE_STATUS])
         {
             issueStatuses.append(issueStatus);
         }
@@ -221,45 +221,45 @@ QList<IssueStatus> CronosSiteXmlParser::parseIssueStatuses(QXmlStreamReader &xml
     return issueStatuses;
 }
 
-QList<IssueType> CronosSiteXmlParser::parseIssueTypes(QXmlStreamReader &xml)
+QList<IssueType> ImportFileXmlParser::parseIssueTypes(QXmlStreamReader &xml)
 {
     QList<IssueType> issueTypes;
 
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_TYPES])
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::ISSUE_TYPES])
         return issueTypes;
 
     xml.readNext();
 
     IssueType issueType;
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_TYPES]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::ISSUE_TYPES]))
     {
-        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_TYPE])
+        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::ISSUE_TYPE])
         {
             issueType = IssueType();
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ID])
             {
                 xml.readNext();
                 issueType.Id = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::NAME])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::NAME])
             {
                 xml.readNext();
                 issueType.Name = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::IS_ROLLBACK])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::IS_ROLLBACK])
             {
                 xml.readNext();
                 issueType.IsRollback = xml.text().toString() == "true";
             }
         }
 
-        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_TYPE])
+        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::ISSUE_TYPE])
         {
             issueTypes.append(issueType);
         }
@@ -269,39 +269,39 @@ QList<IssueType> CronosSiteXmlParser::parseIssueTypes(QXmlStreamReader &xml)
     return issueTypes;
 }
 
-QList<Priority> CronosSiteXmlParser::parsePriorities(QXmlStreamReader &xml)
+QList<Priority> ImportFileXmlParser::parsePriorities(QXmlStreamReader &xml)
 {
     QList<Priority> priorities;
 
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::PRIORITIES])
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::PRIORITIES])
         return priorities;
 
     xml.readNext();
 
     Priority priority;
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::PRIORITIES]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::PRIORITIES]))
     {
-        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::PRIORITY])
+        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::PRIORITY])
         {
             priority = Priority();
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ID])
             {
                 xml.readNext();
                 priority.Id = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::NAME])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::NAME])
             {
                 xml.readNext();
                 priority.Name = xml.text().toString();
             }
         }
 
-        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::PRIORITY])
+        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::PRIORITY])
         {
             priorities.append(priority);
         }
@@ -311,39 +311,39 @@ QList<Priority> CronosSiteXmlParser::parsePriorities(QXmlStreamReader &xml)
     return priorities;
 }
 
-QList<ReasonType> CronosSiteXmlParser::parseReasonTypes(QXmlStreamReader &xml)
+QList<ReasonType> ImportFileXmlParser::parseReasonTypes(QXmlStreamReader &xml)
 {
     QList<ReasonType> reasonTypes;
 
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::REASON_TYPES])
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::REASON_TYPES])
         return reasonTypes;
 
     xml.readNext();
 
     ReasonType reasonType;
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::REASON_TYPES]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::REASON_TYPES]))
     {
-        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::REASSON_TYPE])
+        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::REASSON_TYPE])
         {
             reasonType = ReasonType();
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ID])
             {
                 xml.readNext();
                 reasonType.Id = xml.text().toString().toInt();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::NAME])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::NAME])
             {
                 xml.readNext();
                 reasonType.Name = xml.text().toString();
             }
         }
 
-        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::REASSON_TYPE])
+        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::REASSON_TYPE])
         {
             reasonTypes.append(reasonType);
         }
@@ -353,57 +353,57 @@ QList<ReasonType> CronosSiteXmlParser::parseReasonTypes(QXmlStreamReader &xml)
     return reasonTypes;
 }
 
-QList<IssueResponsibleParty> CronosSiteXmlParser::parseIssueResponsibleParties(QXmlStreamReader &xml)
+QList<IssueResponsibleParty> ImportFileXmlParser::parseIssueResponsibleParties(QXmlStreamReader &xml)
 {
     QList<IssueResponsibleParty> issueResponsibleParties;
 
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::RESPONSIBLE_PARTIES])
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::RESPONSIBLE_PARTIES])
         return issueResponsibleParties;
 
     xml.readNext();
 
     IssueResponsibleParty responsibleParty;
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::RESPONSIBLE_PARTIES]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::RESPONSIBLE_PARTIES]))
     {
-        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::RESPONSIBLE_PARTY])
+        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::RESPONSIBLE_PARTY])
         {
             responsibleParty = IssueResponsibleParty();
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ID])
             {
                 xml.readNext();
                 responsibleParty.Id = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::NAME])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::NAME])
             {
                 xml.readNext();
                 responsibleParty.Name = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PARENT])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::PARENT])
             {
                 xml.readNext();
                 responsibleParty.Parent = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PROJECT])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::PROJECT])
             {
                 xml.readNext();
                 responsibleParty.Project = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::IPM_WP_TYPE])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::IPM_WP_TYPE])
             {
                 xml.readNext();
                 responsibleParty.IpmWpType = xml.text().toString().toInt();
             }
         }
 
-        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::RESPONSIBLE_PARTY])
+        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::RESPONSIBLE_PARTY])
         {
             issueResponsibleParties.append(responsibleParty);
         }
@@ -413,69 +413,69 @@ QList<IssueResponsibleParty> CronosSiteXmlParser::parseIssueResponsibleParties(Q
     return issueResponsibleParties;
 }
 
-QList<IssueQualityItem> CronosSiteXmlParser::parseIssueQualityItems(QXmlStreamReader &xml)
+QList<IssueQualityItem> ImportFileXmlParser::parseIssueQualityItems(QXmlStreamReader &xml)
 {
     QList<IssueQualityItem> issueQualityItems;
 
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::QUALITY_ITEMS])
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::QUALITY_ITEMS])
         return issueQualityItems;
 
     xml.readNext();
 
     IssueQualityItem qualityItem;
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::QUALITY_ITEMS]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::QUALITY_ITEMS]))
     {
-        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::QUALITY_ITEM])
+        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::QUALITY_ITEM])
         {
             qualityItem = IssueQualityItem();
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ID])
             {
                 xml.readNext();
                 qualityItem.Id = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::NAME])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::NAME])
             {
                 xml.readNext();
                 qualityItem.Name = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::CODE])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::CODE])
             {
                 xml.readNext();
                 qualityItem.Code = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PHASE])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::PHASE])
             {
                 xml.readNext();
                 qualityItem.Phase = xml.text().toString().toInt();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PARENT])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::PARENT])
             {
                 xml.readNext();
                 qualityItem.Parent = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PROJECT])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::PROJECT])
             {
                 xml.readNext();
                 qualityItem.Project = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::IPM_WP_TYPE])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::IPM_WP_TYPE])
             {
                 xml.readNext();
                 qualityItem.IpmWpType = xml.text().toString().toInt();
             }
         }
 
-        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::QUALITY_ITEM])
+        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::QUALITY_ITEM])
         {
             issueQualityItems.append(qualityItem);
         }
@@ -485,49 +485,49 @@ QList<IssueQualityItem> CronosSiteXmlParser::parseIssueQualityItems(QXmlStreamRe
     return issueQualityItems;
 }
 
-QSharedPointer<Site> CronosSiteXmlParser::parseSite(QXmlStreamReader &xml)
+QSharedPointer<Site> ImportFileXmlParser::parseSite(QXmlStreamReader &xml)
 {
     QSharedPointer<Site> site = QSharedPointer<Site>(new Site);
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::SITE])
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::SITE])
         return site;
 
     QXmlStreamAttributes attributes = xml.attributes();
-    if (attributes.hasAttribute(inputXmlTokens[CronosSiteXmlParser::TOKEN]))
-        site.data()->Token = attributes.value(inputXmlTokens[CronosSiteXmlParser::TOKEN]).toString();
+    if (attributes.hasAttribute(inputXmlTokens[ImportFileXmlParser::TOKEN]))
+        site.data()->Token = attributes.value(inputXmlTokens[ImportFileXmlParser::TOKEN]).toString();
     else
         return site;
 
     xml.readNext();
 
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::SITE]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::SITE]))
     {
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PROJECT])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::PROJECT])
             {
                 site.data()->project = parseProject(xml);
                 updateProgress(xml.characterOffset());
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::WORKPACKAGE])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::WORKPACKAGE])
             {
                 site.data()->workPackage = parseWorkPackage(xml);
                 updateProgress(xml.characterOffset());
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::SITE_LOG])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::SITE_LOG])
             {
                 site.data()->SiteLog = parseSiteLogMessages(xml);
                 emit updateProgress((int) (xml.characterOffset() / fileSize) * 100);
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::SITE_DETAILS])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::SITE_DETAILS])
             {
                 site.data()->siteDetails = parseSiteDetails(xml);
                 updateProgress(xml.characterOffset());
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::CHECKLISTS])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::CHECKLISTS])
             {
                 site.data()->Checklists.append(parseChecklists(xml));
             }
@@ -537,25 +537,25 @@ QSharedPointer<Site> CronosSiteXmlParser::parseSite(QXmlStreamReader &xml)
     return site;
 }
 
-Project CronosSiteXmlParser::parseProject(QXmlStreamReader &xml)
+Project ImportFileXmlParser::parseProject(QXmlStreamReader &xml)
 {
     Project project;
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::PROJECT])
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::PROJECT])
         return project;
 
     xml.readNext();
 
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::PROJECT]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::PROJECT]))
     {
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ID])
             {
                 xml.readNext();
                 project.Id = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::NAME])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::NAME])
             {
                 xml.readNext();
                 project.Name = xml.text().toString();
@@ -567,25 +567,25 @@ Project CronosSiteXmlParser::parseProject(QXmlStreamReader &xml)
     return project;
 }
 
-WorkPackage CronosSiteXmlParser::parseWorkPackage(QXmlStreamReader &xml)
+WorkPackage ImportFileXmlParser::parseWorkPackage(QXmlStreamReader &xml)
 {
     WorkPackage workPackage;
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::WORKPACKAGE])
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::WORKPACKAGE])
         return workPackage;
 
     xml.readNext();
 
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::WORKPACKAGE]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::WORKPACKAGE]))
     {
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ID])
             {
                 xml.readNext();
                 workPackage.Id = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::NAME])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::NAME])
             {
                 xml.readNext();
                 workPackage.Name = xml.text().toString();
@@ -597,62 +597,62 @@ WorkPackage CronosSiteXmlParser::parseWorkPackage(QXmlStreamReader &xml)
     return workPackage;
 }
 
-QList<QSharedPointer<Message>> CronosSiteXmlParser::parseSiteLogMessages(QXmlStreamReader &xml)
+QList<QSharedPointer<Message>> ImportFileXmlParser::parseSiteLogMessages(QXmlStreamReader &xml)
 {
     QList<QSharedPointer<Message>> messages;
 
     xml.readNext();
 
     QSharedPointer<Message> message;
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::SITE_LOG]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::SITE_LOG]))
     {
-        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::MESSAGE])
+        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::MESSAGE])
         {
             message = QSharedPointer<Message>(new Message);
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ID])
             {
                 xml.readNext();
                 message.data()->Id = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::CONTENT])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::CONTENT])
             {
                 xml.readNext();
                 message.data()->Content = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::CREATED_AT])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::CREATED_AT])
             {
                 xml.readNext();
                 message.data()->CreatedAt = QDateTime::fromString(xml.text().toString(), DATE_TIME_FORMAT);
                 message.data()->CreatedAt.setTimeSpec(Qt::UTC);
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::CREATED_BY])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::CREATED_BY])
             {
                 xml.readNext();
                 message.data()->CreatedBy = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::UPDATED_AT])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::UPDATED_AT])
             {
                 xml.readNext();
                 message.data()->UpdatedAt = QDateTime::fromString(xml.text().toString(), DATE_TIME_FORMAT);
                 message.data()->UpdatedAt.setTimeSpec(Qt::UTC);
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::UPDATED_BY])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::UPDATED_BY])
             {
                 xml.readNext();
                 message.data()->UpdatedBy = xml.text().toString();
             }
         }
 
-        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::MESSAGE])
+        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::MESSAGE])
         {
             messages.append(message);
         }
@@ -663,74 +663,74 @@ QList<QSharedPointer<Message>> CronosSiteXmlParser::parseSiteLogMessages(QXmlStr
     return messages;
 }
 
-SiteDetails CronosSiteXmlParser::parseSiteDetails(QXmlStreamReader &xml)
+SiteDetails ImportFileXmlParser::parseSiteDetails(QXmlStreamReader &xml)
 {
     SiteDetails siteDetails;
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::SITE_DETAILS])
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::SITE_DETAILS])
         return siteDetails;
 
     xml.readNext();
 
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::SITE_DETAILS]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::SITE_DETAILS]))
     {
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::SWP_ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::SWP_ID])
             {
                 xml.readNext();
                 siteDetails.SwpId = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::CSC])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::CSC])
             {
                 xml.readNext();
                 siteDetails.Csc = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::SITE_NAME])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::SITE_NAME])
             {
                 xml.readNext();
                 siteDetails.SiteName = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::STARTED_AT])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::STARTED_AT])
             {
                 xml.readNext();
                 siteDetails.StartedAt = QDateTime::fromString(xml.text().toString(), DATE_TIME_FORMAT);
                 siteDetails.StartedAt.setTimeSpec(Qt::UTC);
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::FORECAST])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::FORECAST])
             {
                 xml.readNext();
                 siteDetails.Forecast = QDate::fromString(xml.text().toString(), DATE_FORMAT);
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::IPM_WP_ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::IPM_WP_ID])
             {
                 xml.readNext();
                 siteDetails.IpmWpId = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::IPM_PHASE])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::IPM_PHASE])
             {
                 xml.readNext();
                 siteDetails.IpmPhase = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PARTNER])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::PARTNER])
             {
                 xml.readNext();
                 siteDetails.Partner = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::CONTACT_NUMBER])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::CONTACT_NUMBER])
             {
                 xml.readNext();
                 siteDetails.ContactNumber = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PERMISSION_ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::PERMISSION_ID])
             {
                 xml.readNext();
                 siteDetails.PermissionId = xml.text().toString();
@@ -742,89 +742,89 @@ SiteDetails CronosSiteXmlParser::parseSiteDetails(QXmlStreamReader &xml)
     return siteDetails;
 }
 
-QList<QSharedPointer<Checklist>> CronosSiteXmlParser::parseChecklists(QXmlStreamReader &xml)
+QList<QSharedPointer<Checklist>> ImportFileXmlParser::parseChecklists(QXmlStreamReader &xml)
 {
     QList<QSharedPointer<Checklist>> checklists;
 
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::CHECKLISTS])
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::CHECKLISTS])
         return checklists;
 
     xml.readNext();
 
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::CHECKLIST])
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::CHECKLIST])
         return checklists;
 
     QSharedPointer<Checklist> checklist;
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::CHECKLISTS]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::CHECKLISTS]))
     {
-        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::CHECKLIST])
+        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::CHECKLIST])
         {
             checklist = QSharedPointer<Checklist>(new Checklist);
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ID])
             {
                 xml.readNext();
                 checklist.data()->Id = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::NAME])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::NAME])
             {
                 xml.readNext();
                 checklist.data()->Name = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::SERVICE])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::SERVICE])
             {
                 xml.readNext();
                 checklist.data()->Service = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::SCOPE])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::SCOPE])
             {
                 xml.readNext();
                 checklist.data()->Scope = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::TECHNOLOGY])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::TECHNOLOGY])
             {
                 xml.readNext();
                 checklist.data()->Technology = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PLANNED_START_DATE])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::PLANNED_START_DATE])
             {
                 xml.readNext();
                 checklist.data()->PlannedStartDate = QDate::fromString(xml.text().toString(), DATE_FORMAT);
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PLANNING_TOOLS])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::PLANNING_TOOLS])
             {
                 checklist.data()->PlanningTools = parsePlanningTools(xml);
                 updateProgress(xml.characterOffset());
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ADDITIONAL_FIELDS])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ADDITIONAL_FIELDS])
             {
                 checklist.data()->AdditionalFields = parseAdditionalFields(xml);
                 updateProgress(xml.characterOffset());
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_LOG])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ISSUE_LOG])
             {
                 checklist.data()->Issues = parseIssues(xml);
                 updateProgress(xml.characterOffset());
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PHASES])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::PHASES])
             {
                 checklist.data()->ProcessPhases = parseProcessPhases(xml);
             }
         }
 
-        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::CHECKLIST])
+        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::CHECKLIST])
         {
             checklists.append(checklist);
         }
@@ -835,42 +835,42 @@ QList<QSharedPointer<Checklist>> CronosSiteXmlParser::parseChecklists(QXmlStream
     return checklists;
 }
 
-QList<QSharedPointer<PlanningTool>> CronosSiteXmlParser::parsePlanningTools(QXmlStreamReader &xml)
+QList<QSharedPointer<PlanningTool>> ImportFileXmlParser::parsePlanningTools(QXmlStreamReader &xml)
 {
     QList<QSharedPointer<PlanningTool>> planningTools;
 
     xml.readNext();
 
     QSharedPointer<PlanningTool> planningTool;
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::PLANNING_TOOLS]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::PLANNING_TOOLS]))
     {
-        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::PLANNING_TOOL])
+        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::PLANNING_TOOL])
         {
             planningTool = QSharedPointer<PlanningTool>(new PlanningTool);
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ID])
             {
                 xml.readNext();
                 planningTool.data()->Id = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::NAME])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::NAME])
             {
                 xml.readNext();
                 planningTool.data()->Name = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::IS_SELECTED])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::IS_SELECTED])
             {
                 xml.readNext();
                 planningTool.data()->IsSelected = xml.text().toString() == "true";
             }
         }
 
-        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::PLANNING_TOOL])
+        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::PLANNING_TOOL])
         {
             planningTools.append(planningTool);
         }
@@ -880,41 +880,41 @@ QList<QSharedPointer<PlanningTool>> CronosSiteXmlParser::parsePlanningTools(QXml
     return planningTools;
 }
 
-QList<QSharedPointer<AdditionalField>> CronosSiteXmlParser::parseAdditionalFields(QXmlStreamReader &xml)
+QList<QSharedPointer<AdditionalField>> ImportFileXmlParser::parseAdditionalFields(QXmlStreamReader &xml)
 {
     QList<QSharedPointer<AdditionalField>> additionalFields;
 
     xml.readNext();
 
     QSharedPointer<AdditionalField> additionalField;
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ADDITIONAL_FIELDS]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::ADDITIONAL_FIELDS]))
     {
-        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::FIELD])
+        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::FIELD])
         {
             additionalField = QSharedPointer<AdditionalField>(new AdditionalField);
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ID])
             {
                 xml.readNext();
                 additionalField.data()->Id = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::NAME])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::NAME])
             {
                 xml.readNext();
                 additionalField.data()->Name = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::TYPE])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::TYPE])
             {
                 xml.readNext();
                 additionalField.data()->Type = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::VALUE])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::VALUE])
             {
                 xml.readNext();
                 additionalField.data()->Value = xml.text().toString();
@@ -923,7 +923,7 @@ QList<QSharedPointer<AdditionalField>> CronosSiteXmlParser::parseAdditionalField
             // options to be implemented
         }
 
-        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::FIELD])
+        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::FIELD])
         {
             additionalFields.append(additionalField);
         }
@@ -933,92 +933,92 @@ QList<QSharedPointer<AdditionalField>> CronosSiteXmlParser::parseAdditionalField
     return additionalFields;
 }
 
-QList<QSharedPointer<Issue>> CronosSiteXmlParser::parseIssues(QXmlStreamReader &xml)
+QList<QSharedPointer<Issue>> ImportFileXmlParser::parseIssues(QXmlStreamReader &xml)
 {
     QList<QSharedPointer<Issue>> issues;
 
     xml.readNext();
 
     QSharedPointer<Issue> issue;
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE_LOG]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::ISSUE_LOG]))
     {
-        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE])
+        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::ISSUE])
         {
             issue = QSharedPointer<Issue>(new Issue);
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ID])
             {
                 xml.readNext();
                 issue.data()->Id = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::TYPE])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::TYPE])
             {
                 xml.readNext();
                 issue.data()->Type = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::PHASE])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::PHASE])
             {
                 xml.readNext();
                 issue.data()->Phase = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::QUALITY_ITEM])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::QUALITY_ITEM])
             {
                 xml.readNext();
                 issue.data()->QualityItem = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::RESPONSIBLE_PARTY])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::RESPONSIBLE_PARTY])
             {
                 xml.readNext();
                 issue.data()->ResponsibleParty = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::STATUS])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::STATUS])
             {
                 xml.readNext();
                 issue.data()->Status = xml.text().toString().toInt();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::DESCRIPTION])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::DESCRIPTION])
             {
                 xml.readNext();
                 issue.data()->Description = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::CREATED_AT])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::CREATED_AT])
             {
                 xml.readNext();
                 issue.data()->CreatedAt = QDateTime::fromString(xml.text().toString(), DATE_TIME_FORMAT);
                 issue.data()->CreatedAt.setTimeSpec(Qt::UTC);
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::CREATED_BY])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::CREATED_BY])
             {
                 xml.readNext();
                 issue.data()->CreatedBy = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::UPDATED_AT])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::UPDATED_AT])
             {
                 xml.readNext();
                 issue.data()->UpdatedAt = QDateTime::fromString(xml.text().toString(), DATE_TIME_FORMAT);
                 issue.data()->UpdatedAt.setTimeSpec(Qt::UTC);
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::UPDATED_BY])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::UPDATED_BY])
             {
                 xml.readNext();
                 issue.data()->UpdatedBy = xml.text().toString();
             }
         }
 
-        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ISSUE])
+        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::ISSUE])
         {
             issues.append(issue);
         }
@@ -1028,40 +1028,40 @@ QList<QSharedPointer<Issue>> CronosSiteXmlParser::parseIssues(QXmlStreamReader &
     return issues;
 }
 
-QList<QSharedPointer<ProcessPhase>> CronosSiteXmlParser::parseProcessPhases(QXmlStreamReader &xml)
+QList<QSharedPointer<ProcessPhase>> ImportFileXmlParser::parseProcessPhases(QXmlStreamReader &xml)
 {
     QList<QSharedPointer<ProcessPhase>> processPhases;
 
     xml.readNext();
 
     QSharedPointer<ProcessPhase> processPhase;
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::PHASES]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::PHASES]))
     {
-        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::PHASE])
+        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::PHASE])
         {
             processPhase = QSharedPointer<ProcessPhase>(new ProcessPhase);
 
             QXmlStreamAttributes attributes = xml.attributes();
-            if (attributes.hasAttribute(inputXmlTokens[CronosSiteXmlParser::TYPE]))
-                processPhase.data()->Type = attributes.value(inputXmlTokens[CronosSiteXmlParser::TYPE]).toString().toInt();
+            if (attributes.hasAttribute(inputXmlTokens[ImportFileXmlParser::TYPE]))
+                processPhase.data()->Type = attributes.value(inputXmlTokens[ImportFileXmlParser::TYPE]).toString().toInt();
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::NAME])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::NAME])
             {
                 xml.readNext();
                 processPhase.data()->Name = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ITEMS])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ITEMS])
             {
                 processPhase.data()->Items = parseChecklistItems(xml);
                 updateProgress(xml.characterOffset());
             }
         }
 
-        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::PHASE])
+        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::PHASE])
         {
             processPhases.append(processPhase);
         }
@@ -1071,61 +1071,61 @@ QList<QSharedPointer<ProcessPhase>> CronosSiteXmlParser::parseProcessPhases(QXml
     return processPhases;
 }
 
-QList<QSharedPointer<ChecklistItem>> CronosSiteXmlParser::parseChecklistItems(QXmlStreamReader &xml)
+QList<QSharedPointer<ChecklistItem>> ImportFileXmlParser::parseChecklistItems(QXmlStreamReader &xml)
 {
     QList<QSharedPointer<ChecklistItem>> checklistItems;
 
     xml.readNext();
 
     QSharedPointer<ChecklistItem> checklistItem;
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ITEMS]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::ITEMS]))
     {
-        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ITEM])
+        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::ITEM])
         {
             checklistItem = QSharedPointer<ChecklistItem>(new ChecklistItem);
 
             QXmlStreamAttributes attributes = xml.attributes();
-            if (attributes.hasAttribute(inputXmlTokens[CronosSiteXmlParser::MANDATORY]))
-                checklistItem.data()->IsMandatory = attributes.value(inputXmlTokens[CronosSiteXmlParser::MANDATORY]).toString() == "true";
-            if (attributes.hasAttribute(inputXmlTokens[CronosSiteXmlParser::PREDEFINED]))
-                checklistItem.data()->IsPredefined = attributes.value(inputXmlTokens[CronosSiteXmlParser::PREDEFINED]).toString() == "true";
+            if (attributes.hasAttribute(inputXmlTokens[ImportFileXmlParser::MANDATORY]))
+                checklistItem.data()->IsMandatory = attributes.value(inputXmlTokens[ImportFileXmlParser::MANDATORY]).toString() == "true";
+            if (attributes.hasAttribute(inputXmlTokens[ImportFileXmlParser::PREDEFINED]))
+                checklistItem.data()->IsPredefined = attributes.value(inputXmlTokens[ImportFileXmlParser::PREDEFINED]).toString() == "true";
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ID])
             {
                 xml.readNext();
                 checklistItem.data()->Id = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::NAME])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::NAME])
             {
                 xml.readNext();
                 checklistItem.data()->Name = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::COMMENT])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::COMMENT])
             {
                 xml.readNext();
                 checklistItem.data()->Comment = xml.text().toString();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::COMPLETED_AT])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::COMPLETED_AT])
             {
                 xml.readNext();
                 checklistItem.data()->CompletedAt = QDateTime::fromString(xml.text().toString(), DATE_TIME_FORMAT);
                 checklistItem.data()->CompletedAt.setTimeSpec(Qt::UTC);
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::DEPENDENCIES])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::DEPENDENCIES])
             {
                 checklistItem.data()->Dependencies = parseChecklistItemDependencies(xml);
                 emit updateProgress((int) (xml.characterOffset() / fileSize) * 100);
             }
         }
 
-        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::ITEM])
+        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::ITEM])
         {
             checklistItems.append(checklistItem);
         }
@@ -1135,36 +1135,36 @@ QList<QSharedPointer<ChecklistItem>> CronosSiteXmlParser::parseChecklistItems(QX
     return checklistItems;
 }
 
-QList<Dependency> CronosSiteXmlParser::parseChecklistItemDependencies(QXmlStreamReader &xml)
+QList<Dependency> ImportFileXmlParser::parseChecklistItemDependencies(QXmlStreamReader &xml)
 {
     QList<Dependency> dependencies;
 
     xml.readNext();
 
     Dependency dependency;
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::DEPENDENCIES]))
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::DEPENDENCIES]))
     {
-        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::DEPENDENCY])
+        if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == inputXmlTokens[ImportFileXmlParser::DEPENDENCY])
         {
             dependency = Dependency();
         }
 
         if (xml.tokenType() == QXmlStreamReader::StartElement)
         {
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::ID])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::ID])
             {
                 xml.readNext();
                 dependency.Id = xml.text().toString().toLong();
             }
 
-            if (xml.name() == inputXmlTokens[CronosSiteXmlParser::TYPE])
+            if (xml.name() == inputXmlTokens[ImportFileXmlParser::TYPE])
             {
                 xml.readNext();
                 dependency.Type = xml.text().toString();
             }
         }
 
-        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[CronosSiteXmlParser::DEPENDENCY])
+        if (xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == inputXmlTokens[ImportFileXmlParser::DEPENDENCY])
         {
             dependencies.append(dependency);
         }
