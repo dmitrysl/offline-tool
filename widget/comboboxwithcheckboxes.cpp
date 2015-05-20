@@ -19,3 +19,12 @@ bool ComboBoxWithCheckboxes::eventFilter(QObject *obj, QEvent *event)
     }
     return QObject::eventFilter(obj, event);
 }
+
+void ComboBoxWithCheckboxes::showPopup()
+{
+    QComboBox::showPopup();
+    QSizePolicy sp = view()->sizePolicy();
+    sp.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
+    view()->setMinimumWidth(100); //change this to see that it alone sets the width
+    view()->setSizePolicy(sp);
+}

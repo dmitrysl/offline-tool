@@ -52,7 +52,6 @@ private:
     void updateVisabilityOfSiteDetailsSection(bool isDisabled, bool clearData);
     void updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPointer<ChecklistItem> checklistItem);
     void timerEvent(QTimerEvent *event);
-    bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
     void importValidationStatus(bool errorOccurred, ImportXmlFileValidationMessageHandler *messageHandler);
@@ -71,6 +70,8 @@ private slots:
     void on_issueRegularCheckbox_clicked(bool checked);
     void on_issueRollbackCheckbox_clicked(bool checked);
     void planningToolClicked(bool checked);
+
+    void on_issueList_activated(int index);
 
 private:
     Ui::MainWindow *ui;

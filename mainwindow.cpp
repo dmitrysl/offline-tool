@@ -18,7 +18,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->planningToolsValue = new ComboBoxWithCheckboxes(this);
+    QRect rect = ui->planningToolsValue->geometry();
+    ui->planningToolsValue->close();
+    ui->planningToolsValue = new ComboBoxWithCheckboxes(ui->groupBox);
+    ui->planningToolsValue->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    ui->planningToolsValue->setSizeAdjustPolicy(ComboBoxWithCheckboxes::AdjustToContentsOnFirstShow);
+    ui->planningToolsValue->setGeometry(rect);
     connect(static_cast<ComboBoxWithCheckboxes*>(ui->planningToolsValue), SIGNAL(checkboxClicked(bool)), this, SLOT(planningToolClicked(bool)));
 
     selectedTimeZone = QTimeZone(QTimeZone::systemTimeZoneId());
@@ -246,6 +251,16 @@ void MainWindow::loadDictionaryData()
         QString qualityItemName = "(" + (parentQualityItem.Code.isEmpty() ? qualityItem.Code : parentQualityItem.Code) + ") " + qualityItem.Name;
         ui->issueQualityItem->addItem(qualityItemName, QVariant(QString::number(qualityItem.Id)));
     }
+
+    foreach (const IssueResponsibleParty &responsibleParty, dictionary.IssueResponsibleParties)
+    {
+        IssueResponsibleParty parentResponsibleParty;
+        if (responsibleParty.Parent != 0)
+            parentResponsibleParty = Utils::findResponsiblePartyItemById(dictionary, responsibleParty.Id);
+        //QString responsiblePartyName = "(" + (parentResponsibleParty.Code.isEmpty() ? qualityItem.Code : parentQualityItem.Code) + ") " + qualityItem.Name;
+        ui->issueResponsibleParty->addItem(responsibleParty.Name, QVariant(QString::number(responsibleParty.Id)));
+    }
+
     updateIssueLogStatus(false, true);
 }
 
@@ -273,7 +288,7 @@ void MainWindow::initializeViewTable()
         }
     }
 
-    QList<QString> list;
+    QList<QString> list;//
     foreach (int phase, uniqueClItemNames.keys())
     {
         list.append(uniqueClItemNames.value(phase).toList());
@@ -469,11 +484,13 @@ void MainWindow::updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPoin
     QListIterator<QSharedPointer<Checklist>> checklistsIterator(site.data()->Checklists);
     const QSharedPointer<Checklist> checklist = checklistsIterator.next();
 
+    ui->issuePhase->clear();
     bool hasNetworkPlanningPhase = false;
     QListIterator<QSharedPointer<ProcessPhase>> phaseIterator(checklist.data()->ProcessPhases);
     while(phaseIterator.hasNext())
     {
         QSharedPointer<ProcessPhase> phase = phaseIterator.next();
+        ui->issuePhase->addItem(phase.data()->Name, QVariant(QString::number(phase.data()->Type)));
         if (phase.data()->Type == 4) hasNetworkPlanningPhase = true;
         ui->phaseComboBox->addItem(phase.data()->Name, QVariant(QString::number(phase.data()->Type)));
     }
@@ -497,7 +514,6 @@ void MainWindow::updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPoin
                 planningToolsModel->setItem(i, 0, item);
             }
             ui->planningToolsValue->setModel(planningToolsModel);
-            //ui->planningToolsValue->view()->viewport()->installEventFilter(this);
         }
     }
 
@@ -510,75 +526,65 @@ void MainWindow::updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPoin
         IssueQualityItem parentQualityItem;
         if (qualityItem.Parent != 0)
             parentQualityItem = Utils::findQualityItemById(dictionary, qualityItem.Id);
-        QString qualityItemName = "(" + (parentQualityItem.Code.isEmpty() ? qualityItem.Code : parentQualityItem.Code) + ") " + qualityItem.Name;
-        ui->issueList->addItem(qualityItemName, QVariant(QString::number(qualityItem.Id)));
+        QString issueName = "(" + (parentQualityItem.Code.isEmpty() ? qualityItem.Code : parentQualityItem.Code) + ") " + qualityItem.Name;
+        ui->issueList->addItem(issueName, QVariant(QString::number(issue.data()->Id)));
     }
+    ui->issueReasonValue->setDisabled(true);
 }
 
 void MainWindow::planningToolClicked(bool checked)
 {
     qDebug() << checked;
-}
 
-bool MainWindow::eventFilter(QObject *obj, QEvent *event)
-{
-    if (obj != ui->planningToolsValue->view()->viewport()) return QObject::eventFilter(obj, event);
-    if (event->type() == QEvent::MouseButtonRelease) {
-        int index = ui->planningToolsValue->view()->currentIndex().row();
+    int index = ui->planningToolsValue->view()->currentIndex().row();
 
-        int numberOfSelectedItems = 0;
-        const int size = ui->planningToolsValue->model()->rowCount();
-        QList<QSharedPointer<PlanningTool>> plannigTools = selectedSite.data()->Checklists[0].data()->PlanningTools;
-        for (int i = 0; i < size; i++)
-        {
-            QVariant qVariant = ui->planningToolsValue->itemData(i, TableCellDataType::PLANNING_TOOL_ID);
-            const long toolId = qVariant.toString().toLong();
+    int numberOfSelectedItems = 0;
+    const int size = ui->planningToolsValue->model()->rowCount();
+    QList<QSharedPointer<PlanningTool>> plannigTools = selectedSite.data()->Checklists[0].data()->PlanningTools;
+    for (int i = 0; i < size; i++)
+    {
+        QVariant qVariant = ui->planningToolsValue->itemData(i, TableCellDataType::PLANNING_TOOL_ID);
+        const long toolId = qVariant.toString().toLong();
 
-            bool isSelected = ui->planningToolsValue->itemData(i, Qt::CheckStateRole) == Qt::Checked;
-            if (isSelected)
-            {
-                numberOfSelectedItems++;
-            }
-            QSharedPointer<PlanningTool> planningTool = Utils::findPlanningToolById(plannigTools, toolId);
-            if (!planningTool.isNull())
-            {
-                planningTool.data()->IsSelected = isSelected;
-            }
-        }
-
-        if (numberOfSelectedItems == 3 && ui->planningToolsValue->itemData(index, Qt::CheckStateRole) == Qt::Unchecked)
-        {
-            return true;
-        }
-
-        bool isSelected = ui->planningToolsValue->itemData(index, Qt::CheckStateRole) == Qt::Checked;
-
+        bool isSelected = ui->planningToolsValue->itemData(i, Qt::CheckStateRole) == Qt::Checked;
         if (isSelected)
         {
-            ui->planningToolsValue->setItemData(index, Qt::Unchecked, Qt::CheckStateRole);
+            numberOfSelectedItems++;
         }
-        else
+        QSharedPointer<PlanningTool> planningTool = Utils::findPlanningToolById(plannigTools, toolId);
+        if (!planningTool.isNull())
         {
-            ui->planningToolsValue->setItemData(index, Qt::Checked, Qt::CheckStateRole);
+            planningTool.data()->IsSelected = isSelected;
         }
+    }
 
-        for (int i = 0; i < size; i++)
+    if (numberOfSelectedItems == 3 && ui->planningToolsValue->itemData(index, Qt::CheckStateRole) == Qt::Unchecked)
+    {
+        return;
+    }
+
+    bool isSelected = ui->planningToolsValue->itemData(index, Qt::CheckStateRole) == Qt::Checked;
+
+    if (isSelected)
+    {
+        ui->planningToolsValue->setItemData(index, Qt::Unchecked, Qt::CheckStateRole);
+    }
+    else
+    {
+        ui->planningToolsValue->setItemData(index, Qt::Checked, Qt::CheckStateRole);
+    }
+
+    for (int i = 0; i < size; i++)
+    {
+        QVariant qVariant = ui->planningToolsValue->itemData(i, TableCellDataType::PLANNING_TOOL_ID);
+        const long toolId = qVariant.toString().toLong();
+
+        bool isSelected = ui->planningToolsValue->itemData(i, Qt::CheckStateRole) == Qt::Checked;
+        QSharedPointer<PlanningTool> planningTool = Utils::findPlanningToolById(plannigTools, toolId);
+        if (!planningTool.isNull())
         {
-            QVariant qVariant = ui->planningToolsValue->itemData(i, TableCellDataType::PLANNING_TOOL_ID);
-            const long toolId = qVariant.toString().toLong();
-
-            bool isSelected = ui->planningToolsValue->itemData(i, Qt::CheckStateRole) == Qt::Checked;
-            QSharedPointer<PlanningTool> planningTool = Utils::findPlanningToolById(plannigTools, toolId);
-            if (!planningTool.isNull())
-            {
-                planningTool.data()->IsSelected = isSelected;
-            }
+            planningTool.data()->IsSelected = isSelected;
         }
-
-        return true;
-    } else {
-        // Propagate to the parent class.
-        return QObject::eventFilter(obj, event);
     }
 }
 
@@ -685,10 +691,62 @@ void MainWindow::on_issueRegularCheckbox_clicked(bool checked)
 {
     Q_UNUSED(checked);
     ui->issueRollbackCheckbox->setChecked(false);
+    ui->issueReasonValue->setDisabled(true);
+    ui->issueQualityItem->setDisabled(false);
+    ui->issuePhase->setDisabled(false);
+    ui->issueStatus->setDisabled(false);
+
+    ui->issueType->clear();
+    foreach (const IssueType &type, dictionary.IssueTypes)
+    {
+        if (type.IsRollback) continue;
+        ui->issueType->addItem(type.Name, QVariant(QString::number(type.Id)));
+    }
+
+    if (checked) ui->issueUpdateButton->setText(QString("Add New"));
+    else ui->issueUpdateButton->setText(QString("Update"));
 }
 
 void MainWindow::on_issueRollbackCheckbox_clicked(bool checked)
 {
     Q_UNUSED(checked);
     ui->issueRegularCheckbox->setChecked(false);
+    ui->issueReasonValue->setDisabled(false);
+    ui->issueQualityItem->setDisabled(true);
+    ui->issuePhase->setDisabled(true);
+    ui->issueStatus->setDisabled(true);
+
+    ui->issueType->clear();
+    foreach (const IssueType &type, dictionary.IssueTypes)
+    {
+        if (!type.IsRollback) continue;
+        ui->issueType->addItem(type.Name, QVariant(QString::number(type.Id)));
+    }
+
+    if (checked) ui->issueUpdateButton->setText(QString("Rollback"));
+    else ui->issueUpdateButton->setText(QString("Update"));
+}
+
+void MainWindow::on_issueList_activated(int index)
+{
+    on_issueRegularCheckbox_clicked(false);
+    qDebug() << ui->issueList->currentData();
+    const long issueId = ui->issueList->currentData().toString().toLong();
+    QSharedPointer<Issue> selectedIssue = Utils::findIssueById(selectedSite.data()->Checklists.at(0).data()->Issues, issueId);
+    if (selectedIssue.isNull()) return;
+    int issueTypeIndex = ui->issueType->findData(QVariant(QString::number(selectedIssue.data()->Type)));
+    ui->issueType->setCurrentIndex(issueTypeIndex);
+    int issuePhaseIndex = ui->issuePhase->findData(QVariant(QString::number(selectedIssue.data()->Phase)));
+    ui->issuePhase->setCurrentIndex(issuePhaseIndex);
+    int issueStatusIndex = ui->issueStatus->findData(QVariant(QString::number(selectedIssue.data()->Status)));
+    ui->issueStatus->setCurrentIndex(issueStatusIndex);
+    int issueQualityItemIndex = ui->issueQualityItem->findData(QVariant(QString::number(selectedIssue.data()->QualityItem)));
+    ui->issueQualityItem->setCurrentIndex(issueQualityItemIndex);
+    int issueResponsiblePartyIndex = ui->issueResponsibleParty->findData(QVariant(QString::number(selectedIssue.data()->ResponsibleParty)));
+    ui->issueResponsibleParty->setCurrentIndex(issueResponsiblePartyIndex);
+    ui->issueDescription->setText(selectedIssue.data()->Description);
+    QDateTime dateTime = selectedIssue.data()->UpdatedAt.isValid() ? selectedIssue.data()->UpdatedAt : selectedIssue.data()->CreatedAt;
+    ui->issueUpdatedAtValue->setDateTime(dateTime.toTimeZone(selectedTimeZone));
+    QString updatedBy = selectedIssue.data()->UpdatedBy.isEmpty() ? selectedIssue.data()->CreatedBy : selectedIssue.data()->UpdatedBy;
+    ui->issueUpdatedByValue->setText(updatedBy);
 }

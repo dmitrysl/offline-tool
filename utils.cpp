@@ -51,6 +51,16 @@ IssueQualityItem Utils::findQualityItemById(const Dictionary &dictionary, const 
     return IssueQualityItem();
 }
 
+IssueResponsibleParty Utils::findResponsiblePartyItemById(const Dictionary &dictionary, const long itemId)
+{
+    if (dictionary.IssueResponsibleParties.isEmpty()) return IssueResponsibleParty();
+    foreach (const IssueResponsibleParty &item, dictionary.IssueResponsibleParties)
+    {
+        if (item.Id == itemId) return item;
+    }
+    return IssueResponsibleParty();
+}
+
 QSharedPointer<PlanningTool> Utils::findPlanningToolById(QList<QSharedPointer<PlanningTool>> planningTools, const long itemId)
 {
     QMutableListIterator<QSharedPointer<PlanningTool>> planningToolsIterator(planningTools);
@@ -60,5 +70,16 @@ QSharedPointer<PlanningTool> Utils::findPlanningToolById(QList<QSharedPointer<Pl
         if (planningTool.data()->Id == itemId) return planningTool;
     }
     return QSharedPointer<PlanningTool>(0);
+}
+
+QSharedPointer<Issue> Utils::findIssueById(QList<QSharedPointer<Issue> > issues, const long itemId)
+{
+    QMutableListIterator<QSharedPointer<Issue>> issuesIterator(issues);
+    while(issuesIterator.hasNext())
+    {
+        QSharedPointer<Issue> issue = issuesIterator.next();
+        if (issue.data()->Id == itemId) return issue;
+    }
+    return QSharedPointer<Issue>(0);
 }
 

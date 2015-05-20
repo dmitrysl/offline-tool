@@ -12,6 +12,8 @@ public:
     ComboBoxWithCheckboxes(QWidget *parent = 0);
     ~ComboBoxWithCheckboxes();
 
+    void showPopup();
+
 signals:
     void checkboxClicked(bool checked);
 
