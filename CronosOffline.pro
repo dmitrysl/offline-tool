@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     parser/importfilexmlparser.cpp \
     dialog/aboutdialog.cpp \
     dialog/selecttimezonedialog.cpp \
-    utils.cpp
+    utils.cpp \
+    widget/comboboxwithcheckboxes.cpp
 
 HEADERS  += mainwindow.h \
     entities.h \
@@ -31,7 +32,8 @@ HEADERS  += mainwindow.h \
     parser/importfilexmlparser.h \
     dialog/aboutdialog.h \
     dialog/selecttimezonedialog.h \
-    utils.h
+    utils.h \
+    widget/comboboxwithcheckboxes.h
 
 FORMS    += mainwindow.ui \
     dialog/aboutdialog.ui \

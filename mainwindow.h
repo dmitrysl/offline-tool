@@ -19,6 +19,7 @@
 #include "parser/importxmlvalidator.h"
 #include "dialog/selecttimezonedialog.h"
 #include "dialog/aboutdialog.h"
+#include "widget/comboboxwithcheckboxes.h"
 
 
 namespace Ui {
@@ -69,6 +70,7 @@ private slots:
     void on_planningToolsValue_activated(int index);
     void on_issueRegularCheckbox_clicked(bool checked);
     void on_issueRollbackCheckbox_clicked(bool checked);
+    void planningToolClicked(bool checked);
 
 private:
     Ui::MainWindow *ui;

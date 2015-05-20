@@ -18,6 +18,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->planningToolsValue = new ComboBoxWithCheckboxes(this);
+    connect(static_cast<ComboBoxWithCheckboxes*>(ui->planningToolsValue), SIGNAL(checkboxClicked(bool)), this, SLOT(planningToolClicked(bool)));
+
     selectedTimeZone = QTimeZone(QTimeZone::systemTimeZoneId());
 
     stateProgress = new QProgressBar(this);
@@ -494,7 +497,7 @@ void MainWindow::updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPoin
                 planningToolsModel->setItem(i, 0, item);
             }
             ui->planningToolsValue->setModel(planningToolsModel);
-            ui->planningToolsValue->view()->viewport()->installEventFilter(this);
+            //ui->planningToolsValue->view()->viewport()->installEventFilter(this);
         }
     }
 
@@ -510,6 +513,11 @@ void MainWindow::updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPoin
         QString qualityItemName = "(" + (parentQualityItem.Code.isEmpty() ? qualityItem.Code : parentQualityItem.Code) + ") " + qualityItem.Name;
         ui->issueList->addItem(qualityItemName, QVariant(QString::number(qualityItem.Id)));
     }
+}
+
+void MainWindow::planningToolClicked(bool checked)
+{
+    qDebug() << checked;
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -577,28 +585,36 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 void MainWindow::on_quickDate_clicked(bool checked)
 {
     quickDateInsert = checked;
+#ifdef QT_DEBUG
     qDebug() << quickDateInsert;
+#endif
 }
 
 void MainWindow::on_projectComboBox_activated(int index)
 {
     QVariant data = ui->projectComboBox->itemData(index);
     long projectId = data.toString().toLong();
+#ifdef QT_DEBUG
     qDebug() << projectId;
+#endif
 }
 
 void MainWindow::on_wpComboBox_activated(int index)
 {
     QVariant data = ui->wpComboBox->itemData(index);
     long wpId = data.toString().toLong();
+#ifdef QT_DEBUG
     qDebug() << wpId;
+#endif
 }
 
 void MainWindow::on_phaseComboBox_activated(int index)
 {
     QVariant data = ui->phaseComboBox->itemData(index);
     long phaseId = data.toString().toLong();
+#ifdef QT_DEBUG
     qDebug() << phaseId;
+#endif
 }
 
 void MainWindow::on_actionSelect_Time_Zone_triggered()
@@ -613,7 +629,9 @@ void MainWindow::on_actionSelect_Time_Zone_triggered()
         timerEvent(NULL);
         initializeViewTable();
     }
+#ifdef QT_DEBUG
     qDebug() << selectedTimeZone;
+#endif
 }
 
 void MainWindow::on_actionExit_triggered()
@@ -633,8 +651,10 @@ void MainWindow::on_clItemUpdateButton_clicked()
 {
     if (selectedChecklistItem.isNull()) return;
     selectedChecklistItem.data()->Comment = ui->clItemComment->toPlainText();
+#ifdef QT_DEBUG
     qDebug() << ui->clItemCompletedAtDateTime->dateTime().toString(DATE_TIME_FORMAT);
     qDebug() << ui->clItemCompletedAtDateTime->dateTime().toTimeZone(QTimeZone("UTC")).toString(DATE_TIME_FORMAT);
+#endif
     selectedChecklistItem.data()->CompletedAt = ui->clItemCompletedAtDateTime->dateTime().toUTC();
     initializeViewTable();
 }
