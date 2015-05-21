@@ -212,10 +212,15 @@ void MainWindow::loadFilterData()
         }
     }
 
+    ui->projectComboBox->clear();
+    ui->projectComboBox->addItem(QString());
     foreach (const Project &project, projects)
     {
         ui->projectComboBox->addItem(project.Name, QVariant(QString::number(project.Id)));
     }
+
+    ui->wpComboBox->clear();
+    ui->wpComboBox->addItem(QString());
     foreach (const WorkPackage &workPackage, workPackages)
     {
         ui->wpComboBox->addItem(workPackage.Name, QVariant(QString::number(workPackage.Id)));
@@ -233,16 +238,19 @@ void MainWindow::loadDictionaryData()
     ui->issuePhase->clear();
     ui->issueStatus->clear();
 
+    ui->issueStatus->addItem(QString());
     foreach (const IssueStatus &issueStatus, dictionary.IssueStatuses)
     {
         ui->issueStatus->addItem(issueStatus.Name, QVariant(QString::number(issueStatus.Id)));
     }
 
+    ui->issueReasonValue->addItem(QString());
     foreach (const ReasonType &reasonType, dictionary.ReasonTypes)
     {
         ui->issueReasonValue->addItem(reasonType.Name, QVariant(QString::number(reasonType.Id)));
     }
 
+    ui->issueQualityItem->addItem(QString());
     foreach (const IssueQualityItem &qualityItem, dictionary.IssueQualityItems)
     {
         IssueQualityItem parentQualityItem;
@@ -251,7 +259,8 @@ void MainWindow::loadDictionaryData()
         QString qualityItemName = "(" + (parentQualityItem.Code.isEmpty() ? qualityItem.Code : parentQualityItem.Code) + ") " + qualityItem.Name;
         ui->issueQualityItem->addItem(qualityItemName, QVariant(QString::number(qualityItem.Id)));
     }
-
+\
+    ui->issueResponsibleParty->addItem(QString());
     foreach (const IssueResponsibleParty &responsibleParty, dictionary.IssueResponsibleParties)
     {
         IssueResponsibleParty parentResponsibleParty;
@@ -485,6 +494,7 @@ void MainWindow::updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPoin
     const QSharedPointer<Checklist> checklist = checklistsIterator.next();
 
     ui->issuePhase->clear();
+    ui->issuePhase->addItem(QString());
     bool hasNetworkPlanningPhase = false;
     QListIterator<QSharedPointer<ProcessPhase>> phaseIterator(checklist.data()->ProcessPhases);
     while(phaseIterator.hasNext())
@@ -502,7 +512,8 @@ void MainWindow::updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPoin
         {
             const int size = checklist.data()->PlanningTools.size();
             planningToolsModel = new QStandardItemModel(size, 1, this); // 3 rows, 1 col
-            for (int i = 0; i < size; i++)
+            planningToolsModel->setItem(0, 0, new QStandardItem());
+            for (int i = 1; i < size; i++)
             {
                 const QSharedPointer<PlanningTool> planningTool = checklist.data()->PlanningTools.at(i);
                 QStandardItem* item = new QStandardItem(planningTool.data()->Name);
@@ -518,6 +529,7 @@ void MainWindow::updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPoin
     }
 
     ui->issueList->clear();
+    ui->issueList->addItem(QString());
     QListIterator<QSharedPointer<Issue>> issueIterator(checklist.data()->Issues);
     while(issueIterator.hasNext())
     {
@@ -537,6 +549,8 @@ void MainWindow::planningToolClicked(bool checked)
     qDebug() << checked;
 
     int index = ui->planningToolsValue->view()->currentIndex().row();
+
+    if (index == 0) return;
 
     int numberOfSelectedItems = 0;
     const int size = ui->planningToolsValue->model()->rowCount();
@@ -697,6 +711,7 @@ void MainWindow::on_issueRegularCheckbox_clicked(bool checked)
     ui->issueStatus->setDisabled(false);
 
     ui->issueType->clear();
+    ui->issueType->addItem(QString(""));
     foreach (const IssueType &type, dictionary.IssueTypes)
     {
         if (type.IsRollback) continue;
@@ -717,6 +732,7 @@ void MainWindow::on_issueRollbackCheckbox_clicked(bool checked)
     ui->issueStatus->setDisabled(true);
 
     ui->issueType->clear();
+    ui->issueType->addItem(QString(""));
     foreach (const IssueType &type, dictionary.IssueTypes)
     {
         if (!type.IsRollback) continue;
