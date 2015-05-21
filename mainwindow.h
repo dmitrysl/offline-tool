@@ -51,6 +51,9 @@ private:
     void updateChecklistItemStatus(bool isDisabled);
     void updateVisabilityOfSiteDetailsSection(bool isDisabled, bool clearData);
     void updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPointer<ChecklistItem> checklistItem);
+    void createIssue();
+    void updateIssue();
+    void createRollbackIssue();
     void timerEvent(QTimerEvent *event);
 
 private slots:
@@ -72,6 +75,8 @@ private slots:
     void planningToolClicked(bool checked);
 
     void on_issueList_activated(int index);
+
+    void on_issueUpdateButton_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -96,8 +101,10 @@ private:
     QList<QSharedPointer<Site>> sitesToView;
     QList<QSharedPointer<Site>> updatedSites;
 
+    QString userName;
     QSharedPointer<Site> selectedSite;
     QSharedPointer<ChecklistItem> selectedChecklistItem;
+    QSharedPointer<Issue> selectedIssue;
 
     int timerId;
     bool quickDateInsert;

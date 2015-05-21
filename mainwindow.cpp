@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    userName = "admin";
+
     QRect rect = ui->planningToolsValue->geometry();
     ui->planningToolsValue->close();
     ui->planningToolsValue = new ComboBoxWithCheckboxes(ui->groupBox);
@@ -369,7 +371,7 @@ void MainWindow::on_exportButton_clicked()
     file.open(QIODevice::WriteOnly);
 
     stateProgress->setVisible(true);
-    generator->generateXmlFile(file, sites, QString("admin"));
+    generator->generateXmlFile(file, sites, userName);
     stateProgress->setVisible(false);
 
     file.close();
@@ -469,6 +471,7 @@ void MainWindow::updateChecklistItemStatus(bool isDisabled)
 
 void MainWindow::updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPointer<ChecklistItem> checklistItem)
 {
+    selectedIssue.clear();
     ui->phaseComboBox->clear();
     if (site.isNull() || checklistItem.isNull())
     {
@@ -703,7 +706,7 @@ void MainWindow::on_planningToolsValue_activated(int index)
 
 void MainWindow::on_issueRegularCheckbox_clicked(bool checked)
 {
-    Q_UNUSED(checked);
+    ui->issueList->setCurrentIndex(0);
     ui->issueRollbackCheckbox->setChecked(false);
     ui->issueReasonValue->setDisabled(true);
     ui->issueQualityItem->setDisabled(false);
@@ -720,11 +723,12 @@ void MainWindow::on_issueRegularCheckbox_clicked(bool checked)
 
     if (checked) ui->issueUpdateButton->setText(QString("Add New"));
     else ui->issueUpdateButton->setText(QString("Update"));
+    ui->issueUpdatedAtValue->setDateTime(QDateTime::currentDateTimeUtc().toTimeZone(selectedTimeZone));
 }
 
 void MainWindow::on_issueRollbackCheckbox_clicked(bool checked)
-{
-    Q_UNUSED(checked);
+{    
+    ui->issueList->setCurrentIndex(0);
     ui->issueRegularCheckbox->setChecked(false);
     ui->issueReasonValue->setDisabled(false);
     ui->issueQualityItem->setDisabled(true);
@@ -741,6 +745,7 @@ void MainWindow::on_issueRollbackCheckbox_clicked(bool checked)
 
     if (checked) ui->issueUpdateButton->setText(QString("Rollback"));
     else ui->issueUpdateButton->setText(QString("Update"));
+    ui->issueUpdatedAtValue->setDateTime(QDateTime::currentDateTimeUtc().toTimeZone(selectedTimeZone));
 }
 
 void MainWindow::on_issueList_activated(int index)
@@ -748,7 +753,7 @@ void MainWindow::on_issueList_activated(int index)
     on_issueRegularCheckbox_clicked(false);
     qDebug() << ui->issueList->currentData();
     const long issueId = ui->issueList->currentData().toString().toLong();
-    QSharedPointer<Issue> selectedIssue = Utils::findIssueById(selectedSite.data()->Checklists.at(0).data()->Issues, issueId);
+    selectedIssue = Utils::findIssueById(selectedSite.data()->Checklists.at(0).data()->Issues, issueId);
     if (selectedIssue.isNull()) return;
     int issueTypeIndex = ui->issueType->findData(QVariant(QString::number(selectedIssue.data()->Type)));
     ui->issueType->setCurrentIndex(issueTypeIndex);
@@ -765,4 +770,95 @@ void MainWindow::on_issueList_activated(int index)
     ui->issueUpdatedAtValue->setDateTime(dateTime.toTimeZone(selectedTimeZone));
     QString updatedBy = selectedIssue.data()->UpdatedBy.isEmpty() ? selectedIssue.data()->CreatedBy : selectedIssue.data()->UpdatedBy;
     ui->issueUpdatedByValue->setText(updatedBy);
+}
+
+void MainWindow::on_issueUpdateButton_clicked()
+{
+    if (ui->issueRegularCheckbox->isChecked())
+    {
+        if (selectedIssue.isNull()) {
+            createIssue();
+            return;
+        }
+        updateIssue();
+    }
+    else if (ui->issueRollbackCheckbox->isChecked())
+    {
+        createRollbackIssue();
+    }
+}
+
+void MainWindow::createIssue()
+{
+    int issueTypeIndex = ui->issueType->currentIndex();
+    int issuePhaseIndex = ui->issuePhase->currentIndex();
+    int issueQualityItemIndex = ui->issueQualityItem->currentIndex();
+    int issueResponsiblePartyIndex = ui->issueResponsibleParty->currentIndex();
+    int issueStatusIndex = ui->issueStatus->currentIndex();
+    QString description = ui->issueDescription->toPlainText().trimmed();
+    QDateTime createdAtDate = ui->issueUpdatedAtValue->dateTime();
+
+    QStringList errors;
+    if (createdAtDate.isNull())
+    {
+        errors << "Created At date";
+    }
+
+    if (issueTypeIndex == 0)
+    {
+        errors << "issue type";
+    }
+
+    if (issuePhaseIndex == 0)
+    {
+        errors << "phase";
+    }
+
+    if (issueQualityItemIndex == 0)
+    {
+        errors << "quality item";
+    }
+
+    if (issueResponsiblePartyIndex == 0)
+    {
+        errors << "responsible party";
+    }
+
+    if (issueStatusIndex == 0)
+    {
+        errors << "status";
+    }
+
+    if (!errors.isEmpty())
+    {
+        QMessageBox::information(this, QString("Offline Tool Notification"), QString("In order to proceed with issue creation, please, choose: " + errors.join(", ") + "."));
+        return;
+    }
+
+    if (description.length() == 0)
+    {
+        QMessageBox::information(this, QString("Offline Tool Notification"), QString("Issue description should be specified."));
+        return;
+    }
+
+    QSharedPointer<Issue> issue;
+    qDebug() << ui->issueType->currentData();
+    issue.data()->Type = ui->issueType->currentData().toString().toLong();
+    issue.data()->Phase = ui->issuePhase->currentData().toString().toLong();
+    issue.data()->CreatedAt = createdAtDate.toUTC();
+    issue.data()->CreatedBy = userName;
+    issue.data()->Description = description;
+    issue.data()->QualityItem = ui->issueQualityItem->currentData().toString().toLong();
+    issue.data()->ResponsibleParty = ui->issueResponsibleParty->currentData().toString().toLong();
+    QMessageBox::information(this, QString("Offline Tool Notification"), QString("Issue has been created."));
+}
+
+void MainWindow::updateIssue()
+{
+    QMessageBox::information(this, QString("Offline Tool Notification"), QString("Issue has been updated."));
+}
+
+void MainWindow::createRollbackIssue()
+{
+    QMessageBox::information(this, QString("Offline Tool Notification"), QString("Rolback issue has been created."));
 }
