@@ -800,7 +800,13 @@ void MainWindow::on_issueList_activated(int index)
         return;
     }
 
-    const long issueId = ui->issueList->currentData().toString().toLong();
+#ifdef QT_DEBUG
+    qDebug() << ui->issueList->currentIndex();
+    qDebug() << index;
+    qDebug() << ui->issueList->itemData(index);
+#endif
+
+    const long issueId = ui->issueList->itemData(index).toString().toLong();
     selectedIssue = Utils::findIssueById(selectedSite.data()->Checklists.at(0).data()->Issues, issueId);
 
     if (selectedIssue.isNull()) return;
@@ -827,6 +833,8 @@ void MainWindow::on_issueList_activated(int index)
 
     QString updatedBy = selectedIssue.data()->UpdatedBy.isEmpty() ? selectedIssue.data()->CreatedBy : selectedIssue.data()->UpdatedBy;
     ui->issueUpdatedByValue->setText(updatedBy);
+
+    ui->issueList->setCurrentIndex(index);
 }
 
 void MainWindow::on_issueUpdateButton_clicked()
