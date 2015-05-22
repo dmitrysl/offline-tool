@@ -650,7 +650,36 @@ void MainWindow::on_actionSelect_Time_Zone_triggered()
         selectedTimeZone = QTimeZone(selectTimeZoneDialog->getSelectedTimeZone());
         selectedTimeZoneLabel->setText(selectedTimeZone.id());
         timerEvent(NULL);
+
+        if (selectedChecklistItem.isNull() || !selectedChecklistItem.data()->CompletedAt.isValid())
+        {
+            ui->clItemCompletedAtDateTime->setDateTime(QDateTime::currentDateTimeUtc().toTimeZone(selectedTimeZone));
+        }
+        else if (!selectedChecklistItem.isNull() && selectedChecklistItem.data()->CompletedAt.isValid())
+        {
+            ui->clItemCompletedAtDateTime->setDateTime(selectedChecklistItem.data()->CompletedAt.toTimeZone(selectedTimeZone));
+        }
+
+        if (selectedIssue.isNull()
+                || selectedIssue.data()->Id == 0 && !selectedIssue.data()->CreatedAt.isValid()
+                || selectedIssue.data()->Id != 0 && !selectedIssue.data()->UpdatedAt.isValid())
+        {
+            ui->issueUpdatedAtValue->setDateTime(QDateTime::currentDateTimeUtc().toTimeZone(selectedTimeZone));
+        }
+        else if (!selectedIssue.isNull()
+                 && (selectedIssue.data()->Id == 0 && selectedIssue.data()->CreatedAt.isValid() || selectedIssue.data()->Id != 0 && selectedIssue.data()->UpdatedAt.isValid()))
+        {
+            if (selectedIssue.data()->UpdatedAt.isValid())
+            {
+                ui->issueUpdatedAtValue->setDateTime(selectedIssue.data()->UpdatedAt.toTimeZone(selectedTimeZone));
+            } else
+            {
+                ui->issueUpdatedAtValue->setDateTime(selectedIssue.data()->CreatedAt.toTimeZone(selectedTimeZone));
+            }
+        }
+
         initializeViewTable();
+
     }
 #ifdef QT_DEBUG
     qDebug() << selectedTimeZone;

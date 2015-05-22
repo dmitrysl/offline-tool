@@ -1,5 +1,6 @@
 #include "importxmlvalidator.h"
 
+
 ImportXmlValidator::ImportXmlValidator(QObject *parent) : QObject(parent)
 {
     messageHandler = new ImportXmlFileValidationMessageHandler;
