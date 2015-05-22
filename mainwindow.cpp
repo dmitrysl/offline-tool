@@ -104,10 +104,12 @@ void MainWindow::timerEvent(QTimerEvent *event)
 
 void MainWindow::importValidationStatus(bool errorOccurred, ImportXmlFileValidationMessageHandler *messageHandler)
 {
+#ifdef QT_DEBUG
     qDebug() << errorOccurred;
     qDebug() << messageHandler->statusMessage();
     qDebug() << messageHandler->line();
     qDebug() << messageHandler->column();
+#endif
 
     importFailed = errorOccurred;
 
@@ -132,16 +134,15 @@ void MainWindow::on_browseFileButton_clicked()
 
     QString filename = QFileDialog::getOpenFileName(this, tr("Open Xml"), ".", tr("Xml files (*.xml)"));
 
-    qDebug() << filename;
-
     statusBar()->showMessage(tr("Opening xml file."));
 
     QFile file(filename);
     if (!file.open(QFile::ReadOnly | QFile::Text))
     {
+#ifdef QT_DEBUG
         qDebug() << "Error: Cannot read file " << qPrintable(filename)
          << ": " << qPrintable(file.errorString());
-
+#endif
         statusBar()->showMessage(tr("In order to continue, select xml file."), 2000);
         return;
     }
@@ -384,14 +385,16 @@ void MainWindow::onTableClicked(const QModelIndex &index)
     if (!index.isValid()) return;
 
     QString cellText = index.data().toString();
-    qDebug() << cellText;
 
     int row = index.row();
     int col = index.column();
 
+#ifdef QT_DEBUG
+    qDebug() << cellText;
     qDebug() << sites.at(row).data()->siteDetails.Csc;
     qDebug() << model->headerData(row, Qt::Vertical).toString();
     qDebug() << model->headerData(col, Qt::Horizontal).toString();
+#endif
 
     QVariant swpDetails = index.data(TableCellDataType::SWP_ID);
 
@@ -414,7 +417,9 @@ void MainWindow::onTableClicked(const QModelIndex &index)
         QDateTime currentTime = QDateTime::currentDateTimeUtc();
         if (!selectedChecklistItem.isNull())
         {
+#ifdef QT_DEBUG
             qDebug() << "update cl item complete date";
+#endif
             selectedChecklistItem.data()->CompletedAt = currentTime;
             model->setData(index, currentTime.toTimeZone(selectedTimeZone).toString(TIME_FORMAT));
         }
@@ -549,7 +554,9 @@ void MainWindow::updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPoin
 
 void MainWindow::planningToolClicked(bool checked)
 {
+#ifdef QT_DEBUG
     qDebug() << checked;
+#endif
 
     int index = ui->planningToolsValue->view()->currentIndex().row();
 
@@ -688,7 +695,6 @@ void MainWindow::on_actionSelect_Time_Zone_triggered()
 
 void MainWindow::on_actionExit_triggered()
 {
-    qDebug() << "exit from app from main app menu.";
     QApplication::quit();
 }
 
@@ -780,23 +786,45 @@ void MainWindow::on_issueRollbackCheckbox_clicked(bool checked)
 void MainWindow::on_issueList_activated(int index)
 {
     on_issueRegularCheckbox_clicked(false);
-    qDebug() << ui->issueList->currentData();
+
+    if (index == 0)
+    {
+        ui->issueType->setCurrentIndex(index);
+        ui->issuePhase->setCurrentIndex(index);
+        ui->issueStatus->setCurrentIndex(index);
+        ui->issueQualityItem->setCurrentIndex(index);
+        ui->issueResponsibleParty->setCurrentIndex(index);
+        ui->issueDescription->setText(QString());
+        ui->issueUpdatedAtValue->setDateTime(QDateTime::currentDateTimeUtc().toTimeZone(selectedTimeZone));
+        ui->issueUpdatedByValue->setText(QString());
+        return;
+    }
+
     const long issueId = ui->issueList->currentData().toString().toLong();
     selectedIssue = Utils::findIssueById(selectedSite.data()->Checklists.at(0).data()->Issues, issueId);
+
     if (selectedIssue.isNull()) return;
+
     int issueTypeIndex = ui->issueType->findData(QVariant(QString::number(selectedIssue.data()->Type)));
     ui->issueType->setCurrentIndex(issueTypeIndex);
+
     int issuePhaseIndex = ui->issuePhase->findData(QVariant(QString::number(selectedIssue.data()->Phase)));
     ui->issuePhase->setCurrentIndex(issuePhaseIndex);
+
     int issueStatusIndex = ui->issueStatus->findData(QVariant(QString::number(selectedIssue.data()->Status)));
     ui->issueStatus->setCurrentIndex(issueStatusIndex);
+
     int issueQualityItemIndex = ui->issueQualityItem->findData(QVariant(QString::number(selectedIssue.data()->QualityItem)));
     ui->issueQualityItem->setCurrentIndex(issueQualityItemIndex);
+
     int issueResponsiblePartyIndex = ui->issueResponsibleParty->findData(QVariant(QString::number(selectedIssue.data()->ResponsibleParty)));
     ui->issueResponsibleParty->setCurrentIndex(issueResponsiblePartyIndex);
+
     ui->issueDescription->setText(selectedIssue.data()->Description);
+
     QDateTime dateTime = selectedIssue.data()->UpdatedAt.isValid() ? selectedIssue.data()->UpdatedAt : selectedIssue.data()->CreatedAt;
     ui->issueUpdatedAtValue->setDateTime(dateTime.toTimeZone(selectedTimeZone));
+
     QString updatedBy = selectedIssue.data()->UpdatedBy.isEmpty() ? selectedIssue.data()->CreatedBy : selectedIssue.data()->UpdatedBy;
     ui->issueUpdatedByValue->setText(updatedBy);
 }
@@ -871,7 +899,11 @@ void MainWindow::createIssue()
     }
 
     QSharedPointer<Issue> issue;
+
+#ifdef QT_DEBUG
     qDebug() << ui->issueType->currentData();
+#endif
+
     issue.data()->Type = ui->issueType->currentData().toString().toLong();
     issue.data()->Phase = ui->issuePhase->currentData().toString().toLong();
     issue.data()->CreatedAt = createdAtDate.toUTC();

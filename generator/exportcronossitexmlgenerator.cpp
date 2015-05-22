@@ -77,11 +77,19 @@ void ExportCronosSiteXmlGenerator::initializeExportXmlTokenMap()
 void ExportCronosSiteXmlGenerator::updateProgress(qint64 currentPosition)
 {
     qint64 fileSize = 0;
+
+#ifdef QT_DEBUG
     qDebug() << "-----------";
     qDebug() << fileSize;
     qDebug() << currentPosition;
+#endif
+
     int progress = (int) (((double) currentPosition / fileSize) * 100);
+
+#ifdef QT_DEBUG
     qDebug() << progress;
+#endif
+
     emit updateProgress(progress);
 }
 

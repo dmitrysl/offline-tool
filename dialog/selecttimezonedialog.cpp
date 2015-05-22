@@ -16,6 +16,7 @@ SelectTimeZoneDialog::SelectTimeZoneDialog(QWidget *parent) :
 
         if (timeZone.offsetData(currentDateTime).daylightTimeOffset == -2147483648) continue;
 
+#ifdef QT_DEBUG
         qDebug() << "--------------";
         qDebug() << timeZone.id();
         qDebug() << timeZone.displayName(QTimeZone::StandardTime, QTimeZone::DefaultName);
@@ -39,15 +40,18 @@ SelectTimeZoneDialog::SelectTimeZoneDialog(QWidget *parent) :
         qDebug() << timeZone.offsetData(currentDateTime).daylightTimeOffset;
         qDebug() << timeZone.offsetData(currentDateTime).standardTimeOffset;
         qDebug() << timeZone.offsetData(currentDateTime).offsetFromUtc;
+#endif
 
         double offset = (double) timeZone.offsetData(currentDateTime).offsetFromUtc / 3600;
 
+#ifdef QT_DEBUG
         if (offset > 0)
             qDebug() << QString("(GMT +%1) $2").arg(offset);
         else
             qDebug() << QString("(GMT %1)").arg(offset);
 
         qDebug() << "      ";
+#endif
 
         QString("(%1) $2")
                 .arg(timeZone.displayName(QTimeZone::GenericTime, QTimeZone::OffsetName))

@@ -88,11 +88,18 @@ void ImportFileXmlParser::initializeInpuXmlTokenMap()
 
 void ImportFileXmlParser::updateProgress(qint64 currentPosition)
 {
+#ifdef QT_DEBUG
     qDebug() << "-----------";
     qDebug() << fileSize;
     qDebug() << currentPosition;
+#endif
+
     int progress = (int) (((double) currentPosition / fileSize) * 100);
+
+#ifdef QT_DEBUG
     qDebug() << progress;
+#endif
+
     emit updateProgress(progress);
 }
 
