@@ -1,5 +1,6 @@
 #include <QFileDialog>
 #include <QFile>
+#include <QUuid>
 #include <QDebug>
 
 #include "QStandardItemModel"
@@ -48,9 +49,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->exportButton->setDisabled(true);
     ui->selectSites->setDisabled(true);
 
-    ui->clItemCompletedAtDateTime->setDateTimeRange(QDateTime(QDate(2015, 2, 25), QTime(11, 35)), QDateTime(QDate(2016, 2, 25), QTime(11, 35)));
+    ui->clItemCompletedAtDateTime->setDateTimeRange(QDateTime(QDate(2010, 2, 25), QTime(11, 35)), QDateTime(QDate(2020, 2, 25), QTime(11, 35)));
     ui->clItemCompletedAtDateTime->setDisplayFormat(QString(DATE_TIME_FORMAT));
     ui->clItemCompletedAtDateTime->setCalendarPopup(true);
+
+    ui->plannedStartDateValue->setDateRange(QDate(2010, 2, 25), QDate(2020, 2, 25));
+    ui->plannedStartDateValue->setDisplayFormat(QString(DATE_FORMAT));
+    ui->plannedStartDateValue->setCalendarPopup(true);
+
+    ui->issueUpdatedAtValue->setDateTimeRange(QDateTime(QDate(2010, 2, 25), QTime(11, 35)), QDateTime(QDate(2020, 2, 25), QTime(11, 35)));
 
 
     connect(ui->tableView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(onTableClicked(const QModelIndex &)));
@@ -172,8 +179,6 @@ void MainWindow::on_browseFileButton_clicked()
 
     file.close();
 
-    initializeViewTable();
-
     statusBar()->showMessage(tr("Xml Loaded"), 4000);
 
     if (sites.isEmpty())
@@ -187,10 +192,27 @@ void MainWindow::on_browseFileButton_clicked()
         QMessageBox::warning(this, QString("Offline Tool Notification"), QString("No data for issue log. Work with issues is disabled."));
     }
 
+    selectSiteDialog = new SelectSiteDialog(this);
+
+    selectSiteDialog->setImportedSites(sites);
+    //selectTimeZoneDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+    if (selectSiteDialog->exec())
+    {
+        sitesToView = selectSiteDialog->getSelectedSites();
+
+        initializeViewTable();
+
+        ui->exportButton->setDisabled(false);
+    }
+    else
+    {
+        sitesToView.clear();
+        dictionary = Dictionary();
+        initializeViewTable();
+    }
+
     loadDictionaryData();
     loadFilterData();
-
-    ui->exportButton->setDisabled(false);
 }
 
 void MainWindow::loadFilterData()
@@ -273,7 +295,7 @@ void MainWindow::loadDictionaryData()
         ui->issueResponsibleParty->addItem(responsibleParty.Name, QVariant(QString::number(responsibleParty.Id)));
     }
 
-    updateIssueLogStatus(false, true);
+    //updateIssueLogStatus(false, true);
 }
 
 void MainWindow::initializeViewTable()
@@ -285,7 +307,7 @@ void MainWindow::initializeViewTable()
     QStringList verticalHeader;
 
     QMap<int, QSet<QString>> uniqueClItemNames;
-    foreach(QSharedPointer<Site> site, sites)
+    foreach(QSharedPointer<Site> site, sitesToView)
     {
         verticalHeader.append(site.data()->siteDetails.Csc);
         if (site.data()->Checklists.isEmpty()) continue;
@@ -308,7 +330,7 @@ void MainWindow::initializeViewTable()
 
     int row = 0;
     int col = 0;
-    foreach (QSharedPointer<Site> site, sites)
+    foreach (QSharedPointer<Site> site, sitesToView)
     {
         foreach (const QString &itemName, list)
         {
@@ -342,6 +364,10 @@ void MainWindow::initializeViewTable()
                 {
                     item = model->item(row, index);
                     item->setBackground(Qt::yellow);
+                }
+                if (site.data()->siteDetails.Status == SiteStatus::ON_HOLD)
+                {
+                    item->setEnabled(false);
                 }
             }
         }
@@ -403,14 +429,23 @@ void MainWindow::onTableClicked(const QModelIndex &index)
         updateSiteDetailsSection(QSharedPointer<Site>(0), QSharedPointer<ChecklistItem>(0));
     }
 
+    updateIssueLogStatus(false, true);
+
     const long swpId = index.data(TableCellDataType::SWP_ID).toString().toLong();
     const int processPhaseId = index.data(TableCellDataType::PHASE_ID).toString().toInt();
     const long clItemId = index.data(TableCellDataType::CL_ITEM_ID).toString().toLong();
 
     selectedSite = Utils::findSiteBySwpId(sites, swpId);
+    selectedChecklist = selectedSite.data()->Checklists.at(0);
     selectedChecklistItem = Utils::findChecklistItemById(selectedSite, clItemId, processPhaseId);
 
     updateSiteDetailsSection(selectedSite, selectedChecklistItem);
+
+    if (selectedSite.data()->siteDetails.Status == SiteStatus::ON_HOLD)
+    {
+        QMessageBox::information(this, QString("Offline Tool Notification"), QString("Site is under On Hold status, thus any activity is disabled."));
+        return;
+    }
 
     if (quickDateInsert)
     {
@@ -438,9 +473,10 @@ void MainWindow::updateVisabilityOfSiteDetailsSection(bool isDisabled, bool clea
     {
         ui->plannedStartDateValue->clear();
         ui->clItemCompletedAtDateTime->clear();
-        ui->cscValue->setText(QString(""));
-        ui->clItemValue->setText(QString(""));
-        ui->clItemComment->setText(QString(""));
+        ui->cscValue->setText(QString());
+        ui->clItemValue->setText(QString());
+        ui->clItemValue->setToolTip(QString());
+        ui->clItemComment->setText(QString());
     }
 }
 
@@ -467,6 +503,19 @@ void MainWindow::updateIssueLogStatus(bool isDisabled, bool clearData)
     }
 }
 
+void MainWindow::clearIssueLog()
+{
+    ui->issueType->setCurrentIndex(0);
+    ui->issuePhase->setCurrentIndex(0);
+    ui->issueStatus->setCurrentIndex(0);
+    ui->issueQualityItem->setCurrentIndex(0);
+    ui->issueResponsibleParty->setCurrentIndex(0);
+    ui->issueDescription->clear();
+    ui->issueUpdatedAtValue->setDateTime(QDateTime::currentDateTimeUtc().toTimeZone(selectedTimeZone));
+    ui->issueUpdatedByValue->clear();
+    ui->issueReasonValue->setCurrentIndex(0);
+}
+
 void MainWindow::updateChecklistItemStatus(bool isDisabled)
 {
     ui->clItemComment->setDisabled(isDisabled);
@@ -487,6 +536,7 @@ void MainWindow::updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPoin
 
     ui->cscValue->setText(site.data()->siteDetails.Csc);
     ui->clItemValue->setText(checklistItem.data()->Name);
+    ui->clItemValue->setToolTip(checklistItem.data()->Name);
     ui->clItemComment->setText(checklistItem.data()->Comment);
 
     if (checklistItem.data()->CompletedAt.isValid())
@@ -533,23 +583,27 @@ void MainWindow::updateSiteDetailsSection(QSharedPointer<Site> site, QSharedPoin
                 planningToolsModel->setItem(i, 0, item);
             }
             ui->planningToolsValue->setModel(planningToolsModel);
+//            ui->planningToolsValue->setSpacing(2);
         }
     }
 
+    reloadIssueList(checklist);
+
+    ui->issueReasonValue->setDisabled(true);
+}
+
+void MainWindow::reloadIssueList(QSharedPointer<Checklist> checklist)
+{
     ui->issueList->clear();
     ui->issueList->addItem(QString());
     QListIterator<QSharedPointer<Issue>> issueIterator(checklist.data()->Issues);
     while(issueIterator.hasNext())
     {
         QSharedPointer<Issue> issue = issueIterator.next();
-        IssueQualityItem qualityItem = Utils::findQualityItemById(dictionary, issue.data()->QualityItem);
-        IssueQualityItem parentQualityItem;
-        if (qualityItem.Parent != 0)
-            parentQualityItem = Utils::findQualityItemById(dictionary, qualityItem.Id);
-        QString issueName = "(" + (parentQualityItem.Code.isEmpty() ? qualityItem.Code : parentQualityItem.Code) + ") " + qualityItem.Name;
-        ui->issueList->addItem(issueName, QVariant(QString::number(issue.data()->Id)));
+        issue.data()->uuid = QUuid::createUuid().toString();
+        ui->issueList->addItem(QString::number(issue.data()->Id), QVariant(issue.data()->uuid));
+        ui->issueList->setItemData(ui->issueList->count()-1, QVariant(QString::number(issue.data()->Id)), TableCellDataType::ISSUE_ID);
     }
-    ui->issueReasonValue->setDisabled(true);
 }
 
 void MainWindow::planningToolClicked(bool checked)
@@ -741,12 +795,21 @@ void MainWindow::on_planningToolsValue_activated(int index)
 
 void MainWindow::on_issueRegularCheckbox_clicked(bool checked)
 {
-    ui->issueList->setCurrentIndex(0);
     ui->issueRollbackCheckbox->setChecked(false);
+    ui->issueList->setCurrentIndex(0);
+    ui->issueUpdatedAtValue->setDateTime(QDateTime::currentDateTimeUtc().toTimeZone(selectedTimeZone));
+
+    clearIssueLog();
+
+    if (!checked)
+    {
+        updateIssueLogStatus(true, false);
+        ui->issueUpdateButton->setText(QString("Update"));
+        return;
+    }
+
+    updateIssueLogStatus(false, false);
     ui->issueReasonValue->setDisabled(true);
-    ui->issueQualityItem->setDisabled(false);
-    ui->issuePhase->setDisabled(false);
-    ui->issueStatus->setDisabled(false);
 
     ui->issueType->clear();
     ui->issueType->addItem(QString(""));
@@ -756,19 +819,32 @@ void MainWindow::on_issueRegularCheckbox_clicked(bool checked)
         ui->issueType->addItem(type.Name, QVariant(QString::number(type.Id)));
     }
 
-    if (checked) ui->issueUpdateButton->setText(QString("Add New"));
-    else ui->issueUpdateButton->setText(QString("Update"));
-    ui->issueUpdatedAtValue->setDateTime(QDateTime::currentDateTimeUtc().toTimeZone(selectedTimeZone));
+    ui->issueUpdateButton->setText(QString("Add New"));
 }
 
 void MainWindow::on_issueRollbackCheckbox_clicked(bool checked)
 {    
-    ui->issueList->setCurrentIndex(0);
     ui->issueRegularCheckbox->setChecked(false);
+    ui->issueList->setCurrentIndex(0);
+    ui->issueUpdatedAtValue->setDateTime(QDateTime::currentDateTimeUtc().toTimeZone(selectedTimeZone));
+
+    clearIssueLog();
+    updateIssueLogStatus(true, false);
+
+    if (!checked)
+    {
+        ui->issueUpdateButton->setText(QString("Update"));
+        return;
+    }
+
+    ui->issueList->setDisabled(false);
+    ui->issueType->setDisabled(false);
+    ui->issueResponsibleParty->setDisabled(false);
+    ui->issueDescription->setDisabled(false);
+    ui->issueUpdatedAtValue->setDisabled(false);
     ui->issueReasonValue->setDisabled(false);
-    ui->issueQualityItem->setDisabled(true);
-    ui->issuePhase->setDisabled(true);
-    ui->issueStatus->setDisabled(true);
+    ui->issueRegularCheckbox->setDisabled(false);
+    ui->issueRollbackCheckbox->setDisabled(false);
 
     ui->issueType->clear();
     ui->issueType->addItem(QString(""));
@@ -778,9 +854,7 @@ void MainWindow::on_issueRollbackCheckbox_clicked(bool checked)
         ui->issueType->addItem(type.Name, QVariant(QString::number(type.Id)));
     }
 
-    if (checked) ui->issueUpdateButton->setText(QString("Rollback"));
-    else ui->issueUpdateButton->setText(QString("Update"));
-    ui->issueUpdatedAtValue->setDateTime(QDateTime::currentDateTimeUtc().toTimeZone(selectedTimeZone));
+    ui->issueUpdateButton->setText(QString("Rollback"));
 }
 
 void MainWindow::on_issueList_activated(int index)
@@ -804,9 +878,10 @@ void MainWindow::on_issueList_activated(int index)
     qDebug() << ui->issueList->currentIndex();
     qDebug() << index;
     qDebug() << ui->issueList->itemData(index);
+    qDebug() << ui->issueList->itemData(index, TableCellDataType::ISSUE_ID);
 #endif
 
-    const long issueId = ui->issueList->itemData(index).toString().toLong();
+    const long issueId = ui->issueList->itemData(index, TableCellDataType::ISSUE_ID).toString().toLong();
     selectedIssue = Utils::findIssueById(selectedSite.data()->Checklists.at(0).data()->Issues, issueId);
 
     if (selectedIssue.isNull()) return;
@@ -896,7 +971,8 @@ void MainWindow::createIssue()
 
     if (!errors.isEmpty())
     {
-        QMessageBox::information(this, QString("Offline Tool Notification"), QString("In order to proceed with issue creation, please, choose: " + errors.join(", ") + "."));
+        QMessageBox::information(this, QString("Offline Tool Notification"),
+                                 QString("In order to proceed with issue creation, please, choose: " + errors.join(", ") + "."));
         return;
     }
 
@@ -906,20 +982,35 @@ void MainWindow::createIssue()
         return;
     }
 
-    QSharedPointer<Issue> issue;
+    QSharedPointer<Issue> issue = QSharedPointer<Issue>(new Issue);
 
 #ifdef QT_DEBUG
     qDebug() << ui->issueType->currentData();
 #endif
 
+    issue.data()->uuid = QUuid::createUuid().toString();
+    qDebug() << issue.data()->uuid;
     issue.data()->Type = ui->issueType->currentData().toString().toLong();
     issue.data()->Phase = ui->issuePhase->currentData().toString().toLong();
     issue.data()->CreatedAt = createdAtDate.toUTC();
+    issue.data()->Status = ui->issueStatus->currentData().toString().toLong();
     issue.data()->CreatedBy = userName;
     issue.data()->Description = description;
     issue.data()->QualityItem = ui->issueQualityItem->currentData().toString().toLong();
     issue.data()->ResponsibleParty = ui->issueResponsibleParty->currentData().toString().toLong();
-    QMessageBox::information(this, QString("Offline Tool Notification"), QString("Issue has been created."));
+
+    QMessageBox::information(this, QString("Offline Tool Notification"), QString("Issue has been successfully created."));
+
+    selectedSite.data()->Checklists.at(0).data()->Issues.append(issue);
+    clearIssueLog();
+    reloadIssueList(selectedSite.data()->Checklists.at(0));
+
+    if (static_cast<IssueStatuses>(issue.data()->Status) == IssueStatuses::OPEN
+            && (static_cast<IssueTypes>(issue.data()->Type) == IssueTypes::IT_ON_HOLD || static_cast<IssueTypes>(issue.data()->Type) == IssueTypes::IT_ON_HOLD_SA))
+    {
+        selectedSite.data()->siteDetails.Status = SiteStatus::ON_HOLD;
+        // model->dataChanged(model->index(0, 0), model->index(1, 3));
+    }
 }
 
 void MainWindow::updateIssue()

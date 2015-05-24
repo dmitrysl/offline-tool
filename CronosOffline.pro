@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     dialog/aboutdialog.cpp \
     dialog/selecttimezonedialog.cpp \
     utils.cpp \
-    widget/comboboxwithcheckboxes.cpp
+    widget/comboboxwithcheckboxes.cpp \
+    dialog/selectsitedialog.cpp
 
 HEADERS  += mainwindow.h \
     entities.h \
@@ -32,11 +33,13 @@ HEADERS  += mainwindow.h \
     dialog/aboutdialog.h \
     dialog/selecttimezonedialog.h \
     utils.h \
-    widget/comboboxwithcheckboxes.h
+    widget/comboboxwithcheckboxes.h \
+    dialog/selectsitedialog.h
 
 FORMS    += mainwindow.ui \
     dialog/aboutdialog.ui \
-    dialog/selecttimezonedialog.ui
+    dialog/selecttimezonedialog.ui \
+    dialog/selectsitedialog.ui
 
 DISTFILES +=
 

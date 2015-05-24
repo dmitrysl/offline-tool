@@ -15,6 +15,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     details += "<tr><td style=\"width:15%\">0.1.0</td><td style=\"width:85%\">Added parser of xml file</td></tr>";
     details += "<tr><td style=\"width:15%\">0.1.1</td><td style=\"width:85%\">Updated parsing of data</td></tr>";
     details += "<tr><td style=\"width:15%\">0.2.0</td><td style=\"width:85%\">Added export data to xml file</td></tr>";
+    details += "<tr><td style=\"width:15%\">0.2.1</td><td style=\"width:85%\">Fixed bugs related to issue creation</td></tr>";
     details += "</table>";
 
     ui->releaseNotesBrowser->setText(details);

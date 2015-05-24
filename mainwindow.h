@@ -19,6 +19,7 @@
 #include "parser/importxmlvalidator.h"
 #include "dialog/selecttimezonedialog.h"
 #include "dialog/aboutdialog.h"
+#include "dialog/selectsitedialog.h"
 #include "widget/comboboxwithcheckboxes.h"
 
 
@@ -36,7 +37,8 @@ public:
         SWP_ID = 1001,
         PHASE_ID,
         CL_ITEM_ID,
-        PLANNING_TOOL_ID
+        PLANNING_TOOL_ID,
+        ISSUE_ID
     };
 
     explicit MainWindow(QWidget *parent = 0);
@@ -47,6 +49,8 @@ private:
     void initializeViewTable();
     void loadFilterData();
     void loadDictionaryData();
+
+    void clearIssueLog();
     void updateIssueLogStatus(bool isDisabled, bool clearData);
     void updateChecklistItemStatus(bool isDisabled);
     void updateVisabilityOfSiteDetailsSection(bool isDisabled, bool clearData);
@@ -55,6 +59,8 @@ private:
     void updateIssue();
     void createRollbackIssue();
     void timerEvent(QTimerEvent *event);
+
+    void reloadIssueList(QSharedPointer<Checklist> checklist);
 
 private slots:
     void importValidationStatus(bool errorOccurred, ImportXmlFileValidationMessageHandler *messageHandler);
@@ -84,6 +90,7 @@ private:
     QLabel *selectedTimeZoneLabel;
     QProgressBar *stateProgress;
 
+    SelectSiteDialog *selectSiteDialog;
     SelectTimeZoneDialog *selectTimeZoneDialog;
     AboutDialog *aboutDialog;
 
@@ -103,6 +110,7 @@ private:
 
     QString userName;
     QSharedPointer<Site> selectedSite;
+    QSharedPointer<Checklist> selectedChecklist;
     QSharedPointer<ChecklistItem> selectedChecklistItem;
     QSharedPointer<Issue> selectedIssue;
 

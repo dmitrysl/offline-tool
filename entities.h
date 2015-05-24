@@ -8,6 +8,40 @@
 #include <QList>
 
 
+
+enum SiteStatus
+{
+    NONE,
+    ASSIGNED,
+    NETWORK_PLANNING_ONNGOING,
+    DATABUILD_READY,
+    PREPARATION_ONGOING,
+    PREPARED,
+    INTEGRATION_ONGOING,
+    INTEGRATED,
+    VERIFICATION_ONGOING,
+    VERIFIED,
+    COMPLETED,
+    CRITICAL,
+    ON_HOLD,
+    ROLLBACK
+};
+
+enum IssueStatuses
+{
+    OPEN = 1,
+    CLOSE,
+    DELETE
+};
+
+enum IssueTypes
+{
+    IT_SA = 1,
+    IT_NON_SA,
+    IT_ON_HOLD,
+    IT_ON_HOLD_SA
+};
+
 struct IssueStatus
 {
     long Id;
@@ -114,6 +148,8 @@ struct ChecklistItem
     bool IsPredefined;
     bool IsMandatory;
     QList<Dependency> Dependencies;
+    bool isDisabled;
+    QString message;
 };
 
 struct ProcessPhase
@@ -125,6 +161,7 @@ struct ProcessPhase
 
 struct Issue
 {
+    QString uuid;
     long Id;
     long Type;
     long Phase;
@@ -184,6 +221,7 @@ struct SiteDetails
     QString Partner;
     QString ContactNumber;
     QString PermissionId;
+    SiteStatus Status = SiteStatus::NONE;
 };
 
 struct Site
