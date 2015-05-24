@@ -33,12 +33,15 @@ public:
 
 private slots:
     void clicked(const QModelIndex &index);
-
     void on_buttonBox_accepted();
 
 private:
     void initializeTable();
     bool eventFilter(QObject *obj, QEvent *event);
+
+    bool doesSiteAlreadyAdded(long swpId);
+    void addSite(long swpId);
+    void removeSite(long swpId);
 
 private:
     Ui::SelectSiteDialog *ui;

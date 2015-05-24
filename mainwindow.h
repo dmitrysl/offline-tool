@@ -17,9 +17,12 @@
 #include "parser/importfilexmlparser.h"
 #include "generator/exportcronossitexmlgenerator.h"
 #include "parser/importxmlvalidator.h"
+
+#include "dialog/logindialog.h"
 #include "dialog/selecttimezonedialog.h"
 #include "dialog/aboutdialog.h"
 #include "dialog/selectsitedialog.h"
+
 #include "widget/comboboxwithcheckboxes.h"
 
 
@@ -90,6 +93,7 @@ private:
     QLabel *selectedTimeZoneLabel;
     QProgressBar *stateProgress;
 
+    LoginDialog *loginDialog;
     SelectSiteDialog *selectSiteDialog;
     SelectTimeZoneDialog *selectTimeZoneDialog;
     AboutDialog *aboutDialog;

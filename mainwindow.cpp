@@ -7,6 +7,7 @@
 #include "QStandardItem"
 
 #include <QMessageBox>
+#include <QTimer>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -18,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    hide();
 
     userName = "admin";
 
@@ -52,17 +54,34 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->clItemCompletedAtDateTime->setDateTimeRange(QDateTime(QDate(2010, 2, 25), QTime(11, 35)), QDateTime(QDate(2020, 2, 25), QTime(11, 35)));
     ui->clItemCompletedAtDateTime->setDisplayFormat(QString(DATE_TIME_FORMAT));
     ui->clItemCompletedAtDateTime->setCalendarPopup(true);
+    ui->clItemCompletedAtDateTime->setDateTime(QDateTime::currentDateTimeUtc().toTimeZone(selectedTimeZone));
 
     ui->plannedStartDateValue->setDateRange(QDate(2010, 2, 25), QDate(2020, 2, 25));
     ui->plannedStartDateValue->setDisplayFormat(QString(DATE_FORMAT));
     ui->plannedStartDateValue->setCalendarPopup(true);
+    ui->plannedStartDateValue->setDate(QDate());
 
     ui->issueUpdatedAtValue->setDateTimeRange(QDateTime(QDate(2010, 2, 25), QTime(11, 35)), QDateTime(QDate(2020, 2, 25), QTime(11, 35)));
+    ui->issueUpdatedAtValue->setDisplayFormat(QString(DATE_TIME_FORMAT));
+    ui->issueUpdatedAtValue->setCalendarPopup(true);
+    ui->issueUpdatedAtValue->setDateTime(QDateTime::currentDateTimeUtc().toTimeZone(selectedTimeZone));
 
 
     connect(ui->tableView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(onTableClicked(const QModelIndex &)));
 
     initialize();
+
+    loginDialog = new LoginDialog(this);
+
+    if (loginDialog->exec())
+    {
+        userName = loginDialog->getUserName();
+        show();
+    }
+    else
+    {
+        QTimer::singleShot(1, this, SLOT(on_actionExit_triggered()));
+    }
 }
 
 MainWindow::~MainWindow()
