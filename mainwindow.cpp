@@ -66,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->issueUpdatedAtValue->setCalendarPopup(true);
     ui->issueUpdatedAtValue->setDateTime(QDateTime::currentDateTimeUtc().toTimeZone(selectedTimeZone));
 
+    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 
     connect(ui->tableView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(onTableClicked(const QModelIndex &)));
 
@@ -319,94 +320,166 @@ void MainWindow::loadDictionaryData()
 
 void MainWindow::initializeViewTable()
 {
-    model = new QStandardItemModel(this);
-    QStandardItem *item;
+//    model = new QStandardItemModel(this);
+//    QStandardItem *item;
 
-    QStringList horizontalHeader;
-    QStringList verticalHeader;
+//    QStringList horizontalHeader;
+//    QStringList verticalHeader;
 
-    QMap<int, QSet<QString>> uniqueClItemNames;
-    foreach(QSharedPointer<Site> site, sitesToView)
+//    QMap<int, QSet<QString>> uniqueClItemNames;
+//    foreach(QSharedPointer<Site> site, sitesToView)
+//    {
+//        verticalHeader.append(site.data()->siteDetails.Csc);
+//        if (site.data()->Checklists.isEmpty()) continue;
+//        foreach(QSharedPointer<ProcessPhase> processPhase, site.data()->Checklists[0].data()->ProcessPhases)
+//        {
+//            QSet<QString> items = uniqueClItemNames.value(processPhase.data()->Type);
+//            foreach (QSharedPointer<ChecklistItem> checklistItem, processPhase.data()->Items)
+//            {
+//                items.insert(checklistItem.data()->Name);
+//            }
+//            uniqueClItemNames.insert(processPhase.data()->Type, items);
+//        }
+//    }
+
+//    QList<QString> list;//
+//    foreach (int phase, uniqueClItemNames.keys())
+//    {
+//        list.append(uniqueClItemNames.value(phase).toList());
+//    }
+
+//    int row = 0;
+//    int col = 0;
+//    foreach (QSharedPointer<Site> site, sitesToView)
+//    {
+//        foreach (const QString &itemName, list)
+//        {
+//            item = new QStandardItem(QString("N/A"));
+//            item->setEditable(false);
+//            item->setTextAlignment(Qt::AlignHCenter);
+//            item->setBackground(QColor(Qt::white));
+//            item->setForeground(QColor(Qt::black));
+//            model->setItem(row, col, item);
+//            col++;
+//        }
+//        if (site.data()->Checklists.isEmpty()) continue;
+//        foreach(QSharedPointer<ProcessPhase> processPhase, site.data()->Checklists[0].data()->ProcessPhases)
+//        {
+//            //QList<QString> items = uniqueClItemNames.value(processPhase.Type).toList();
+//            foreach (QSharedPointer<ChecklistItem> checklistItem, processPhase.data()->Items)
+//            {
+//                int index = list.indexOf(checklistItem.data()->Name);
+//                item = new QStandardItem(checklistItem.data()->CompletedAt.toTimeZone(selectedTimeZone).toString(DATE_FORMAT));
+//                item->setEditable(false);
+//                item->setTextAlignment(Qt::AlignHCenter);
+//                item->setBackground(QColor(Qt::white));
+//                item->setForeground(QColor(Qt::black));
+//                item->setData(QVariant(QString::number(site.data()->siteDetails.SwpId)), TableCellDataType::SWP_ID);
+//                item->setData(QVariant(processPhase.data()->Type), TableCellDataType::PHASE_ID);
+//                item->setData(QVariant(QString::number(checklistItem.data()->Id)), TableCellDataType::CL_ITEM_ID);
+
+//                model->setItem(row, index, item);
+
+//                if (!checklistItem.data()->Comment.isEmpty())
+//                {
+//                    item = model->item(row, index);
+//                    item->setBackground(Qt::yellow);
+//                }
+//                if (site.data()->siteDetails.Status == SiteStatus::ON_HOLD)
+//                {
+//                    item->setEnabled(false);
+//                }
+//            }
+//        }
+//        row++;
+//        col = 0;
+//    }
+
+//    horizontalHeader.append(list);
+
+//    int colIndex = 0;
+//    foreach (const QString headerName, horizontalHeader)
+//    {
+//        QStandardItem* headerItem = new QStandardItem(headerName);
+//        headerItem->setToolTip(headerName);
+//        model->setHorizontalHeaderItem(colIndex, headerItem);
+//        colIndex++;
+//    }
+
+//    model->setVerticalHeaderLabels(verticalHeader);
+//    model->setColumnCount(horizontalHeader.size());
+
+
+    // ==========================================================
+
+    QStandardItem *Header1 = new QStandardItem(QObject::tr("Header1"));
+    QStandardItem *Header2 = new QStandardItem(QObject::tr("Header2"));
+    QStandardItem *Header3 = new QStandardItem(QObject::tr("Header3"));
+    QStandardItem *Header4 = new QStandardItem(QObject::tr("Header4"));
+    QStandardItem *Header5 = new QStandardItem(QObject::tr("Header5"));
+    QStandardItem *Header6 = new QStandardItem(QObject::tr("Header6"));
+    QStandardItem *Header7 = new QStandardItem(QObject::tr("Header7"));
+    QStandardItem *Header8 = new QStandardItem(QObject::tr("Header8"));
+
+    QList<QStandardItem *> l;
+    l.push_back( new QStandardItem("Sub Header1"));
+    Header3->appendColumn(l);
+
+    l.clear();
+    l.push_back(new QStandardItem("Sub Header2"));
+    Header3->appendColumn(l);
+
+    l.clear();
+    l.push_back(new QStandardItem("Sub Header3"));
+    Header6->appendColumn(l);
+
+    l.clear();
+    l.push_back(new QStandardItem("Sub Header4"));
+    Header6->appendColumn(l);
+
+    //Add all the table header items to to table header model.
+    headerModel->setItem(0, 0, Header1);
+    headerModel->setItem(0, 1, Header2);
+    headerModel->setItem(0, 2, Header3);
+    headerModel->setItem(0, 3, Header4);
+    headerModel->setItem(0, 4, Header5);
+    headerModel->setItem(0, 5, Header6);
+    headerModel->setItem(0, 6, Header7);
+    headerModel->setItem(0, 7, Header8);
+
+    // ==========================================================
+
+    QString cellText("cell(%1, %2)");
+    for(int i=0; i<9; ++i)
     {
-        verticalHeader.append(site.data()->siteDetails.Csc);
-        if (site.data()->Checklists.isEmpty()) continue;
-        foreach(QSharedPointer<ProcessPhase> processPhase, site.data()->Checklists[0].data()->ProcessPhases)
+        QList<QStandardItem*> l;
+        for(int j=0; j<9; ++j)
         {
-            QSet<QString> items = uniqueClItemNames.value(processPhase.data()->Type);
-            foreach (QSharedPointer<ChecklistItem> checklistItem, processPhase.data()->Items)
-            {
-                items.insert(checklistItem.data()->Name);
-            }
-            uniqueClItemNames.insert(processPhase.data()->Type, items);
+            QStandardItem* cell=new QStandardItem(cellText.arg(i).arg(j));
+            l.push_back(cell);
         }
+        dataModel->appendRow(l);
     }
 
-    QList<QString> list;//
-    foreach (int phase, uniqueClItemNames.keys())
-    {
-        list.append(uniqueClItemNames.value(phase).toList());
-    }
+    // ==========================================================
 
-    int row = 0;
-    int col = 0;
-    foreach (QSharedPointer<Site> site, sitesToView)
-    {
-        foreach (const QString &itemName, list)
-        {
-            item = new QStandardItem(QString("N/A"));
-            item->setEditable(false);
-            item->setTextAlignment(Qt::AlignHCenter);
-            item->setBackground(QColor(Qt::white));
-            item->setForeground(QColor(Qt::black));
-            model->setItem(row, col, item);
-            col++;
-        }
-        if (site.data()->Checklists.isEmpty()) continue;
-        foreach(QSharedPointer<ProcessPhase> processPhase, site.data()->Checklists[0].data()->ProcessPhases)
-        {
-            //QList<QString> items = uniqueClItemNames.value(processPhase.Type).toList();
-            foreach (QSharedPointer<ChecklistItem> checklistItem, processPhase.data()->Items)
-            {
-                int index = list.indexOf(checklistItem.data()->Name);
-                item = new QStandardItem(checklistItem.data()->CompletedAt.toTimeZone(selectedTimeZone).toString(DATE_FORMAT));
-                item->setEditable(false);
-                item->setTextAlignment(Qt::AlignHCenter);
-                item->setBackground(QColor(Qt::white));
-                item->setForeground(QColor(Qt::black));
-                item->setData(QVariant(QString::number(site.data()->siteDetails.SwpId)), TableCellDataType::SWP_ID);
-                item->setData(QVariant(processPhase.data()->Type), TableCellDataType::PHASE_ID);
-                item->setData(QVariant(QString::number(checklistItem.data()->Id)), TableCellDataType::CL_ITEM_ID);
+    proxyModel->setSourceModel(dataModel);
+    proxyModel->setHorizontalHeaderModel(headerModel);
+    proxyModel->setVerticalHeaderModel(headerModel);
 
-                model->setItem(row, index, item);
+    ui->tableView->setModel(proxyModel);
 
-                if (!checklistItem.data()->Comment.isEmpty())
-                {
-                    item = model->item(row, index);
-                    item->setBackground(Qt::yellow);
-                }
-                if (site.data()->siteDetails.Status == SiteStatus::ON_HOLD)
-                {
-                    item->setEnabled(false);
-                }
-            }
-        }
-        row++;
-        col = 0;
-    }
+    HierarchicalHeaderView *headerView = new HierarchicalHeaderView(Qt::Horizontal, ui->tableView);
+    ui->tableView->setHorizontalHeader(headerView);
 
-    horizontalHeader.append(list);
-
-    model->setHorizontalHeaderLabels(horizontalHeader);
-    model->setVerticalHeaderLabels(verticalHeader);
-
-    model->setColumnCount(horizontalHeader.size());
-
-    ui->tableView->setModel(model);
+//    ui->tableView->horizontalHeader()->setFixedWidth(200);
+    ui->tableView->setWordWrap(true);
+    ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
 
     //ui->tableView->setItemDelegate(new Delegate);
 
     ui->tableView->resizeRowsToContents();
-    ui->tableView->resizeColumnsToContents();
+//    ui->tableView->resizeColumnsToContents();
 }
 
 void MainWindow::on_exportButton_clicked()
@@ -436,7 +509,7 @@ void MainWindow::onTableClicked(const QModelIndex &index)
 
 #ifdef QT_DEBUG
     qDebug() << cellText;
-    qDebug() << sites.at(row).data()->siteDetails.Csc;
+    //qDebug() << sites.at(row).data()->siteDetails.Csc;
     qDebug() << model->headerData(row, Qt::Vertical).toString();
     qDebug() << model->headerData(col, Qt::Horizontal).toString();
 #endif

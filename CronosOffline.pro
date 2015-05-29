@@ -23,7 +23,9 @@ SOURCES += main.cpp\
     utils.cpp \
     widget/comboboxwithcheckboxes.cpp \
     dialog/selectsitedialog.cpp \
-    dialog/logindialog.cpp
+    dialog/logindialog.cpp \
+    widget/table/proxymodelwithheadermodels.cpp \
+    widget/table/hierarchicalheaderview.cpp
 
 HEADERS  += mainwindow.h \
     entities.h \
@@ -36,7 +38,9 @@ HEADERS  += mainwindow.h \
     utils.h \
     widget/comboboxwithcheckboxes.h \
     dialog/selectsitedialog.h \
-    dialog/logindialog.h
+    dialog/logindialog.h \
+    widget/table/proxymodelwithheadermodels.h \
+    widget/table/hierarchicalheaderview.h
 
 FORMS    += mainwindow.ui \
     dialog/aboutdialog.ui \

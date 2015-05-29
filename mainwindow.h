@@ -24,6 +24,7 @@
 #include "dialog/selectsitedialog.h"
 
 #include "widget/comboboxwithcheckboxes.h"
+#include "widget/table/proxymodelwithheadermodels.h"
 
 
 namespace Ui {
@@ -97,6 +98,10 @@ private:
     SelectSiteDialog *selectSiteDialog;
     SelectTimeZoneDialog *selectTimeZoneDialog;
     AboutDialog *aboutDialog;
+
+    QStandardItemModel *headerModel;
+    QStandardItemModel *dataModel;
+    ProxyModelWithHeaderModels *proxyModel;
 
     QStandardItemModel *model;
     QStandardItemModel *planningToolsModel;
