@@ -3,6 +3,7 @@
 
 
 #include <QHeaderView>
+#include <QEvent>
 
 class HierarchicalHeaderView : public QHeaderView
 {
@@ -16,6 +17,8 @@ class HierarchicalHeaderView : public QHeaderView
 protected:
     void paintSection(QPainter* painter, const QRect& rect, int logicalIndex) const;
     QSize sectionSizeFromContents(int logicalIndex) const;
+    bool eventFilter(QObject *obj, QEvent *event);
+
 public:
 
     enum HeaderDataModelRoles
@@ -28,6 +31,7 @@ public:
     void setModel(QAbstractItemModel* model);
 private slots:
     void on_sectionResized(int logicalIndex);
+    void on_entered(QModelIndex index);
 };
 
 

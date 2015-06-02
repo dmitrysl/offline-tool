@@ -100,8 +100,10 @@ private:
     AboutDialog *aboutDialog;
 
     QStandardItemModel *headerModel;
+    QStandardItemModel *verticalHeaderModel;
     QStandardItemModel *dataModel;
     ProxyModelWithHeaderModels *proxyModel;
+    HierarchicalHeaderView *headerView;
 
     QStandardItemModel *model;
     QStandardItemModel *planningToolsModel;

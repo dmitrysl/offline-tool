@@ -2,6 +2,8 @@
 #include <QAbstractItemModel>
 #include <QPointer>
 
+#include <QDebug>
+
 #include "hierarchicalheaderview.h"
 
 class HierarchicalHeaderView::private_data
@@ -209,6 +211,7 @@ public:
         QRect r(left, top, width, height);
 
         uniopt.text = cellIndex.data(Qt::DisplayRole).toString();
+
         painter->save();
         uniopt.rect = r;
         if(cellIndex.data(Qt::UserRole).isValid())
@@ -227,6 +230,7 @@ public:
             hv->style()->drawControl(QStyle::CE_Header, &uniopt, painter, hv);
         }
         painter->restore();
+        hv->childAt(QPoint(uniopt.rect.left()+5, uniopt.rect.top()+3))->setToolTip(uniopt.text);
         return top+height;
     }
 
@@ -347,6 +351,16 @@ HierarchicalHeaderView::HierarchicalHeaderView(Qt::Orientation orientation, QWid
     :QHeaderView(orientation, parent), _pd(new private_data())
 {
     connect(this, SIGNAL(sectionResized(int, int, int)), this, SLOT(on_sectionResized(int)));
+    this->viewport()->installEventFilter(this);
+}
+
+bool HierarchicalHeaderView::eventFilter(QObject *obj, QEvent *event)
+{
+    qDebug() << obj;
+    if (obj == this->viewport() &&  event->type() == QEvent::MouseButtonRelease) {
+        qDebug() << "hello";
+    }
+    return QObject::eventFilter(obj, event);
 }
 
 HierarchicalHeaderView::~HierarchicalHeaderView()
@@ -509,6 +523,11 @@ void HierarchicalHeaderView::on_sectionResized(int logicalIndex)
             viewport()->update(r.normalized());
         }
     }
+}
+
+void HierarchicalHeaderView::on_entered(QModelIndex index)
+{
+    qDebug() << index;
 }
 
 void HierarchicalHeaderView::setModel(QAbstractItemModel* model)
